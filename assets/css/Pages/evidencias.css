@@ -1,0 +1,114 @@
+/* MODAL */
+.archivos {
+  align-items: center;
+}
+
+.custum-file-upload {
+  height: 200px;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: space-between;
+  gap: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #cacaca;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0px 48px 35px -48px rgba(0, 0, 0, 0.1);
+}
+
+.custum-file-upload .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .icon svg {
+  height: 80px;
+  fill: rgba(75, 85, 99, 1);
+}
+
+.custum-file-upload .text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .text span {
+  font-weight: 400;
+  color: rgba(75, 85, 99, 1);
+}
+
+.custum-file-upload input {
+  display: none;
+}
+
+/* CARD */
+#cards-container {
+  display: flex;           /* Usamos flexbox para alinear los elementos */
+  flex-wrap: wrap;         /* Esto permite que los elementos se envuelvan a una nueva línea cuando no haya espacio */
+  gap: 1rem;               /* Espacio entre los elementos (puedes ajustar el valor según lo necesites) */
+  justify-content: flex-start; /* Alinea los elementos al inicio del contenedor */
+  padding: 1rem;           /* Espaciado interno del contenedor */
+}
+
+.card {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  width: 140px;
+  padding: 5px;
+  margin-left: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  aspect-ratio: 16/12;
+  transition: all 0.3s ease;
+}
+
+.card .no-image {
+  border: 2px dashed #373737;
+  display: flex;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  aspect-ratio: 16/8;
+}
+
+.card .no-image .icon {
+  width: 60px;
+  color: #373737;
+}
+
+.card .image .picture {
+  border-radius: 8px;
+  width: inherit;
+  aspect-ratio: 16/8;
+}
+
+.card .content {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.card .content .name {
+  margin: 0;
+  padding: 0;
+  padding-top: 2px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.card .content p {
+  margin: 0;
+  padding: 0;
+  font-size: 0.8rem;
+}
