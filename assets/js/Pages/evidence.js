@@ -1,5 +1,9 @@
 if (currentPath.includes("/Evidence")) {
-    document.addEventListener('DOMContentLoaded', loadRecentFiles);
+    document.addEventListener('DOMContentLoaded', function () {
+        loadRecentFiles();
+        listarFiltros();
+    });
+
     // Llama a la función deseada
     const file = document.getElementById('file');
 
@@ -7,6 +11,10 @@ if (currentPath.includes("/Evidence")) {
         // Detectar clic en el botón "Agregar"
         $("#btnUpload").click(function () {
             btnNuevoArchivo();
+        });
+
+        $("#filter-btn").click(function (e) {
+            busquedaPorFiltro(e);
         });
     });
 
@@ -108,25 +116,104 @@ function loadRecentFiles() {
 
 function timeAgo(timestamp) {
     const now = new Date();
-    const diffInSeconds = Math.floor((now - new Date(timestamp)) / 1000);
+    const uploadedTime = new Date(timestamp); // Convierte el timestamp a un objeto Date
+    const diffInSeconds = Math.floor((now - uploadedTime) / 1000);
 
-    const conditions = [
-        { seconds: 60, label: 'segundo' },
-        { seconds: 3600, label: 'minuto' },
-        { seconds: 86400, label: 'hora' },
-        { seconds: 2592000, label: 'día' },
-        { seconds: 31536000, label: 'mes' },
-        { seconds: 315360000, label: 'año' }
-    ];
-
-    for (let i = conditions.length - 1; i >= 0; i--) {
-        const { seconds, label } = conditions[i];
-        const timeDiff = Math.floor(diffInSeconds / seconds);
-
-        if (timeDiff >= 1) {
-            return `hace ${timeDiff} ${label}${timeDiff > 1 ? 's' : ''}`;
-        }
+    if (diffInSeconds < 1) {
+        return 'Justo ahora';
     }
 
-    return 'Justo ahora';
+    const intervals = [
+        { seconds: 31536000, label: 'año' },
+        { seconds: 2592000, label: 'mes' },
+        { seconds: 86400, label: 'día' },
+        { seconds: 3600, label: 'hora' },
+        { seconds: 60, label: 'minuto' },
+        { seconds: 1, label: 'segundo' }
+    ];
+
+    for (const interval of intervals) {
+        const count = Math.floor(diffInSeconds / interval.seconds);
+        if (count >= 1) {
+            return `hace ${count} ${interval.label}${count > 1 ? 's' : ''}`;
+        }
+    }
 }
+
+function listarFiltros() {
+    // AJAX para obtener empleados
+    $.ajax({
+        url: BASE_URL + 'Evidence/listarEmpleados',
+        type: 'POST',
+        dataType: 'json',
+        /*  data: {
+            
+        }, */
+        success: function (data) {
+            const selectEmpleado = $("#empleado_filtro");
+            selectEmpleado.empty();
+
+            selectEmpleado.append('<option value="">Seleccione empleado</option>');
+
+            data.forEach(function (empleado) {
+                selectEmpleado.append(
+                    `<option value="${empleado.id_empleado}">${empleado.nombre_completo}</option>`
+                );
+            });
+        },
+        error: function () {
+            alert('Error al obtener los empleados');
+        }
+    });
+
+    // AJAX para obtener sucursales
+    $.ajax({
+        url: BASE_URL + 'Evidence/listarSucursales',
+        type: 'POST',
+        dataType: 'json',
+        /*  data: {
+
+        }, */
+        success: function (data) {
+            const selectRole = $("#sucursal_filtro");
+            selectRole.empty();
+
+            selectRole.append('<option value="">Seleccione sucursal</option>');
+
+            data.forEach(function (sucursal) {
+                selectRole.append(
+                    `<option value="${sucursal.id_sucursal}">${sucursal.nombre_sucursal}</option>`
+                );
+            });
+        },
+        error: function () {
+            alert('Error al obtener los roles');
+        }
+    });
+}
+
+function busquedaPorFiltro(e) {
+    e.preventDefault();
+    
+    // Verificar los valores de los campos
+    console.log($("#sucursal_filtro").val());
+    console.log($("#empleado_filtro").val());
+    console.log($("#desde").val());
+    console.log($("#hasta").val());
+
+    const url = BASE_URL + "Evidence/filtrar";
+    const frm = $("#filtros");
+    console.log(frm.serialize());
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: frm.serialize(), 
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
+        }
+    });
+}
+

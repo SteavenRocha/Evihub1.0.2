@@ -31,7 +31,7 @@ class UserModel extends Query
     }
 
     public function getEmpleados()
-    {
+    {//consulta que selecciona a mis empelados que no estan registrados como usuarios
         $sql = "SELECT 
                     e.id_empleado, 
                     e.nombres, 

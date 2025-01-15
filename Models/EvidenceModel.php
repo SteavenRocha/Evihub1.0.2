@@ -56,5 +56,67 @@ class EvidenceModel extends Query
         // Retornar el resultado
         return $data == 1 ? "ok" : "error";
     }
+
+    public function getEmpleados()
+    {
+        $sql = "SELECT 
+                    id_empleado,
+                    estado_empleado,
+                    CONCAT(nombres, ' ', ape_paterno, ' ', ape_materno) AS nombre_completo FROM EMPLEADO";
+        $data['empleados'] = $this->selectAll($sql);
+        return $data['empleados'];
+    }
+
+    public function getSucursales()
+    {
+        $sql = "SELECT * FROM SUCURSAL";
+        $data['sucursal'] = $this->selectAll($sql);
+        return $data['sucursal'];
+    }
+
+    public function filtrarArchivo(int $sucursal_filtro, int $empleado_filtro, string $desde, string $hasta)
+    {
+
+        $data = array($sucursal_filtro, $empleado_filtro, $desde, $hasta);
+
+        $desde = date('Y-m-d', strtotime($desde));  // Asegura que esté en formato adecuado
+        $hasta = date('Y-m-d', strtotime($hasta));  // Asegura que esté en formato adecuado
+
+        print_r($desde);
+        print_r($hasta);
+
+        $sql = "SELECT 
+                    a.id_archivo,
+                    a.nombre_archivo,
+                    a.tipo_archivo,
+                    a.fecha_subida,
+                    a.estado_archivo,
+                    e.id_empleado,
+                    e.dni,
+                    e.nombres,
+                    e.ape_paterno,
+                    e.ape_materno,
+                    s.id_sucursal,
+                    s.nombre_sucursal,
+                    u.id_usuario,
+                    u.usuario
+                FROM 
+                    ARCHIVO a
+                JOIN 
+                    SUCURSAL s ON a.id_sucursal = s.id_sucursal
+                JOIN 
+                    USUARIO u ON a.id_usuario = u.id_usuario
+                JOIN
+                    EMPLEADO e ON u.id_empleado = e.id_empleado
+                WHERE 
+                    e.id_empleado = $empleado_filtro
+                AND
+                    s.id_sucursal = $sucursal_filtro
+                AND 
+                    DATE(a.fecha_subida) BETWEEN $desde AND $hasta;
+                ";
+
+        $data['filtro'] = $this->selectAll($sql);
+        return $data['filtro'];
+    }
 }
-?>

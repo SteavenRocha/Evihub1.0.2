@@ -23,7 +23,7 @@ include "Views/Modules/sidebar.php";
 
             <section class="table__body__card">
 
-                <div class="table__sub_header">
+                <!-- <div class="table__sub_header">
                     <h3>
                         <span class="label">EMPLEADO:</span>
                         <span class="data"><?php echo isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : 'Usuario'; ?></span>
@@ -32,7 +32,49 @@ include "Views/Modules/sidebar.php";
                         <span class="label">SUCURSAL:</span>
                         <span class="data"><?php echo isset($_SESSION['nombre_sucursal']) ? $_SESSION['nombre_sucursal'] : 'Sucursal'; ?></span>
                     </h3>
-                </div>
+                </div> -->
+
+                <form method="post" class="filtros" id="filtros">
+                    <label class="titulo-filtro">Filtro de busqueda</label>
+
+                    <div class="filtro-sucursal">
+                        <label for="sucursal_filtro">Sucursal:</label>
+                        <select name="sucursal_filtro" class="form-select" id="sucursal_filtro" aria-label="Seleccione sucursal">
+                            <!-- <option selected>Seleccione sucursal</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option> -->
+                        </select>
+                    </div>
+
+                    <div class="filtro-empleado">
+                        <label for="empleado_filtro">Empleado:</label>
+                        <select name="empleado_filtro" class="form-select" id="empleado_filtro" aria-label="Seleccione empleado">
+                            <!--  <option selected>Seleccione empleado</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option> -->
+                        </select>
+                    </div>
+
+                    <div class="fecha-desde">
+                        <label for="desde">Desde:</label>
+                        <input type="date" id="desde" name="desde">
+                    </div>
+
+                    <div class="fecha-hasta">
+                        <label for="hasta">Hasta:</label>
+                        <input type="date" id="hasta" name="hasta">
+                    </div>
+
+                    <div class="contenedor-btn-filter" title="Aplicar filtros">
+                        <button type="button" class="filter-btn" id="filter-btn">
+                            <span class="bar bar1"></span>
+                            <span class="bar bar2"></span>
+                            <span class="bar bar1"></span>
+                        </button>
+                    </div>
+                </form>
 
                 <div class="sub-titulo">
                     Archivos recientes

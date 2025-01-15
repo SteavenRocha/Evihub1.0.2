@@ -40,21 +40,32 @@ class Evidence extends Controller
         if ($data == "ok") {
             $destino = 'assets/archivos';
 
-            // Crear carpeta si no existe
+            // Crear carpeta raíz si no existe
             if (!file_exists($destino)) {
                 mkdir($destino, 0777, true);
             }
 
-            $fecha = date("Ymd");
-            $carpeta = $destino . '/' . $id_usuario . '/' . $fecha;
+            // Crear carpeta específica de la sucursal
+            $carpetaSucursal = $destino . '/' . $id_sucursal;
+            if (!file_exists($carpetaSucursal)) {
+                mkdir($carpetaSucursal, 0777, true);
+            }
 
-            // Crear la carpeta específica del usuario y la fecha si no existe
-            if (!file_exists($carpeta)) {
-                mkdir($carpeta, 0777, true);
+            // Crear carpeta específica del usuario dentro de la sucursal
+            $carpetaUsuario = $carpetaSucursal . '/' . $id_usuario;
+            if (!file_exists($carpetaUsuario)) {
+                mkdir($carpetaUsuario, 0777, true);
+            }
+
+            // Crear carpeta específica de la fecha dentro del usuario
+            $fecha = date("Ymd");
+            $carpetaFecha = $carpetaUsuario . '/' . $fecha;
+            if (!file_exists($carpetaFecha)) {
+                mkdir($carpetaFecha, 0777, true);
             }
 
             // Verificar si el archivo ya existe en la carpeta de destino
-            $filePath = $carpeta . '/' . $name;
+            $filePath = $carpetaFecha . '/' . $name;
             $originalName = $name;
             $counter = 1;
 
@@ -62,7 +73,7 @@ class Evidence extends Controller
             while (file_exists($filePath)) {
                 // Cambiar el nombre del archivo agregando un sufijo
                 $name = pathinfo($originalName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
-                $filePath = $carpeta . '/' . $name;
+                $filePath = $carpetaFecha . '/' . $name;
                 $counter++;
             }
 
@@ -79,5 +90,39 @@ class Evidence extends Controller
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
+
+    public function listarEmpleados()
+    {
+        $data['empleados'] = $this->model->getEmpleados();
+        echo json_encode($data['empleados'], JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
+    public function listarSucursales()
+    {
+        $data['sucursales'] = $this->model->getSucursales();
+        echo json_encode($data['sucursales'], JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
+    public function filtrar()
+    {
+        // Verifica si los datos de los filtros están presentes y asigna valores predeterminados si es necesario
+        $sucursal_filtro = isset($_POST['sucursal_filtro']) ? $_POST['sucursal_filtro'] : null;
+        $empleado_filtro = isset($_POST['empleado_filtro']) ? $_POST['empleado_filtro'] : null;
+        $desde = isset($_POST['desde']) ? $_POST['desde'] : null;
+        $hasta = isset($_POST['hasta']) ? $_POST['hasta'] : null;
+
+        // Verifica que los datos no sean NULL o vacíos
+        if (is_null($sucursal_filtro) || is_null($empleado_filtro) || is_null($desde) || is_null($hasta)) {
+            // Puedes manejar el caso cuando faltan parámetros
+            echo json_encode(['error' => 'Faltan parámetros necesarios']);
+            return;
+        }
+
+        // Llama a la función para obtener los resultados
+        $data['filtro'] = $this->model->filtrarArchivo($sucursal_filtro, $empleado_filtro, $desde, $hasta);
+        echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
+        die();
+    }
 }
-?>

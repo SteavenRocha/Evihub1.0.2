@@ -171,7 +171,7 @@ function registrarEmpleado(e) {
                         loadEmployees();
                     } else if ( res == "invalido") {
                         notyf.error('Formato de nombre invalido');
-                    } else {
+                    } else if (res == "existe" ) {
                         notyf.error('Empleado ya existe');
                     }
                 } catch (e) {
