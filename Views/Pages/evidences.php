@@ -21,19 +21,25 @@ include "Views/Modules/sidebar.php";
                     </svg>AGREGAR</button>
             </section>
 
-            <section class="table__body">
-                <div class="sub-titulo">
-                    <h3>Usuario: <?php echo isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : 'Usuario'; ?></h3>
-                    <h3 class="mx-5">Sucursal: <?php echo isset($_SESSION['nombre_sucursal']) ? $_SESSION['nombre_sucursal'] : 'Sucursal'; ?></h3>
+            <section class="table__body__card">
+
+                <div class="table__sub_header">
+                    <h3>
+                        <span class="label">EMPLEADO:</span>
+                        <span class="data"><?php echo isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : 'Usuario'; ?></span>
+                    </h3>
+                    <h3 class="mx-5">
+                        <span class="label">SUCURSAL:</span>
+                        <span class="data"><?php echo isset($_SESSION['nombre_sucursal']) ? $_SESSION['nombre_sucursal'] : 'Sucursal'; ?></span>
+                    </h3>
                 </div>
-                <hr>
+
                 <div class="sub-titulo">
                     Archivos recientes
                 </div>
 
-                <br>
                 <div id="cards-container">
-                    
+
                 </div>
             </section>
         </div>

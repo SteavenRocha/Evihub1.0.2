@@ -40,6 +40,7 @@ if (currentPath.includes("/Evidence")) {
                     const res = JSON.parse(response);
 
                     if (res == "si") {
+                        e.target.value = '';
                         notyf.success("Archivo subido con éxito");
                         loadRecentFiles();
                         cerrarModalUpload();
@@ -63,23 +64,25 @@ function loadRecentFiles() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = ''; // Limpiar el contenedor antes de agregar nuevos cards
+
             if (data.length === 0) {
-                console.log("No hay archivos recientes.");
+                // Mostrar mensaje si no hay archivos
+                const noFilesMessage = document.createElement('p');
+                noFilesMessage.textContent = "No existen archivos recientes.";
+                noFilesMessage.classList.add('no-files-message'); // Clase para personalizar el estilo si lo deseas
+                container.appendChild(noFilesMessage);
             } else {
-                const container = document.getElementById('cards-container');
-                container.innerHTML = '';
-
                 data.forEach(file => {
-                    console.log(file);
-
-                    const card = document.createElement('div');
-                    card.classList.add('card');
-
                     // Usamos la función timeAgo para formatear la fecha
                     const formattedDate = timeAgo(file.fecha_subida);
 
                     // Convertir el tamaño a KB
                     const sizeInKB = (file.size / 1024).toFixed(2); // Convertir a KB y redondear a 2 decimales
+
+                    const card = document.createElement('div');
+                    card.classList.add('card');
 
                     card.innerHTML = `
                         <div class="no-image">
