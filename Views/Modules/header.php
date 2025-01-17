@@ -9,6 +9,7 @@
      <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/Libraries/notyf.min.css">
      <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/Libraries/sweetalert2.min.css">
      <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/Libraries/dataTables.css">
+     <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/Libraries/select2.min.css">
      <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/style.css">
  </head>
 

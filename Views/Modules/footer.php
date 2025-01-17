@@ -5,6 +5,7 @@
 <script src="<?php echo BASE_URL; ?>assets/js/Libraries/notyf.min.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/Libraries/sweetalert2.all.min.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/Libraries/dataTables.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/Libraries/select2.min.js"></script>
 <script>
     const BASE_URL = "<?php echo BASE_URL; ?>";
 </script>

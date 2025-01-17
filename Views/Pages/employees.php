@@ -59,7 +59,7 @@ include "Views/Modules/sidebar.php";
                         <div class="form-group">
                             <div class="mb-3">
                                 <label for="dni" class="form-label">DNI</label>
-                                <input id="dni" class="form-control" type="text" name="dni" placeholder="DNI">
+                                <input id="dni" class="form-control" type="number" name="dni" placeholder="DNI">
                             </div>
                         </div>
 

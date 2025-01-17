@@ -54,64 +54,109 @@
   justify-content: flex-start;
   padding: 1rem;
   width: 100%;
+  height: 50%;
+  height: auto;
 }
 
 .card {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  width: 140px;
-  padding: 5px;
-  margin-left: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
+  margin-left: 6px;
+  width: calc(50% - 1rem);
+  height: 40px;
+  border: 1px solid #ccc;
   display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  aspect-ratio: 16/12;
-  transition: all 0.3s ease;
-}
-
-.card .no-image {
-  border: 2px dashed #373737;
-  display: flex;
-  height: 100px;
+  flex-direction: row;
+  justify-content: space-between;
+  /* justify-content: center;
   align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  aspect-ratio: 16/8;
+  text-align: center;
+  box-sizing: border-box; */
 }
 
-.card .no-image .icon {
-  width: 60px;
-  color: #373737;
+.card:hover {
+  border-color: #007bff;
 }
 
-.card .image .picture {
-  border-radius: 8px;
-  width: inherit;
-  aspect-ratio: 16/8;
-}
-
-.card .content {
+.card-img {
+  width: 5%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
 }
 
-.card .content .name {
-  margin: 0;
-  padding: 0;
-  padding-top: 2px;
-  font-size: 0.9rem;
-  font-weight: 700;
+.card-img img {
+  width: 25px;
+  height: 20px;
+  object-fit: cover;
 }
 
-.card .content p {
+.card-text {
+  width: 100%;
+  padding: 2px;
+  font-size: 12px;
+  color: #333;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 40px;
+  padding-left: 10px;
+}
+
+.card-text p:first-of-type {
+  width: 90px;
+}
+
+.card-text p {
   margin: 0;
-  padding: 0;
-  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-title {
+  width: 25%;
+  max-width: 40%;
+  margin: 0;
+  cursor: pointer;
+  /*     flex: 1; */
+  font-size: 13px;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-left: 5px;
+}
+
+.card-title:hover {
+  background-color: rgba(173, 167, 167, 0.582);
+  border-radius: 4px;
+}
+
+.card-icon {
+  margin-right: 5px;
+  width: 5%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f7f7f7;
+}
+
+.card-icon svg {
+  padding: 3px;
+  border-radius: 4px;
+  width: 100%;
+  height: 30px;
+  cursor: pointer;
+  color: #000000;
+  transition: background-color 0.3s ease;
+  /* Suaviza la transición del color de fondo */
+}
+
+.card-icon svg:hover {
+  background-color: rgba(173, 167, 167, 0.582);
 }
 
 /* no-files-message */
@@ -186,7 +231,7 @@
 /* FILTROS DE BUSQUEDA */
 .filtros {
   display: grid;
-  grid-template-columns: 1fr 1fr 130px 130px 45px; 
+  grid-template-columns: 1fr 1fr 130px 130px 45px;
   column-gap: 16px;
   padding-left: 1.5rem;
   padding-right: 1.4rem;
@@ -196,7 +241,7 @@
 }
 
 .titulo-filtro {
-  grid-column: 1 / -1; 
+  grid-column: 1 / -1;
   font-size: 18px;
   font-weight: bold;
   text-align: left;
@@ -232,7 +277,7 @@ input[type="date"] {
 }
 
 input[type="date"] {
-  width: 100%; 
+  width: 100%;
 }
 
 .form-select:hover,
@@ -242,6 +287,77 @@ input[type="date"]:hover {
 
 .form-select:focus,
 input[type="date"]:focus {
+  border-color: #113a66;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+/* SELECT2 */
+.select2-container {
+  width: auto !important;
+}
+
+.select2-container .select2-selection {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.select2-container .select2-selection:hover {
+  border-color: #007bff;
+}
+
+.select2-container .select2-selection:focus,
+.select2-container--focus .select2-selection {
+  border-color: #113a66;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.select2-container .select2-selection__arrow {
+  height: 100%;
+  top: 0;
+  right: 10px;
+}
+
+.select2-container .select2-results__option {
+  padding: 6px 10px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.select2-container .select2-results__option--highlighted {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.select2-container .select2-search {
+  padding: 5px;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+}
+
+.select2-container .select2-search input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.select2-container .select2-search input:hover {
+  border-color: #007bff;
+}
+
+.select2-container .select2-search input:focus {
   border-color: #113a66;
   outline: none;
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
@@ -266,6 +382,7 @@ input[type="date"]:focus {
   cursor: pointer;
   border: none;
 }
+
 .bar {
   width: 50%;
   height: 2px;
@@ -276,6 +393,7 @@ input[type="date"]:focus {
   position: relative;
   border-radius: 2px;
 }
+
 .bar::before {
   content: "";
   width: 2px;
@@ -287,15 +405,19 @@ input[type="date"]:focus {
   transition: all 0.3s;
   box-shadow: 0px 0px 5px white;
 }
+
 .bar1::before {
   transform: translateX(-4px);
 }
+
 .bar2::before {
   transform: translateX(4px);
 }
+
 .filter-btn:hover .bar1::before {
   transform: translateX(4px);
 }
+
 .filter-btn:hover .bar2::before {
   transform: translateX(-4px);
 }
@@ -311,20 +433,63 @@ input[type="date"]:focus {
 
 @media (max-width: 768px) {
   .filtros {
-    grid-template-columns: 1fr 1fr 1fr; 
+    grid-template-columns: 1fr 1fr 1fr;
   }
+
   .contenedor-btn-filter {
-    grid-column: 2; 
+    grid-column: 2;
     margin-top: 28px;
   }
 }
 
 @media (max-width: 480px) {
   .filtros {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
+
   .contenedor-btn-filter {
-    grid-column: 1; 
+    grid-column: 1;
     margin-top: 5px;
   }
+}
+
+/* IMAGEN MODAL - MODAL DETALLES */
+.img-modal {
+  width: 35%;
+  max-width: 35%;
+  height: 450px;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.details {
+  flex: 1;
+  height: 450px;
+  margin-left: 10px;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #000000;
+  border-radius: 0.5rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 30px;
+}
+
+.details label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--title-color);
+  margin: 0;
+  margin-right: 10px;
+}
+
+.details p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-color);
 }

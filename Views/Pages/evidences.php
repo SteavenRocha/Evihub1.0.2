@@ -87,7 +87,7 @@ include "Views/Modules/sidebar.php";
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal subir archivo -->
     <div class="modal fade" id="upload" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
@@ -109,7 +109,8 @@ include "Views/Modules/sidebar.php";
                         <div class="text">
                             <span>Click to upload image</span>
                         </div>
-                        <input type="file" id="file" name="file">
+                        <input type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.gif,.csv">
+
                     </label>
                 </div>
 
@@ -120,6 +121,53 @@ include "Views/Modules/sidebar.php";
             </div>
         </div>
     </div>
+
+    <!-- Modal detalles archivo-->
+    <div class="modal fade" id="modalDetallesArchivo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detalles del archivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-start">
+                    <img id="imageModal" alt="Imagen del archivo" class="img-modal">
+                    <div class="details">
+                        <div class="detail-row">
+                            <label>Nombre del archivo: </label>
+                            <p id="nombreArchivo"></p>
+                        </div>
+                        <div class="detail-row">
+                            <label>Tipo archivo: </label>
+                            <p id="tipoArchivo"></p>
+                        </div>
+                        <div class="detail-row">
+                            <label>Fecha de subida: </label>
+                            <p id="fechaSubida"></p>
+                        </div>
+                        <div class="detail-row">
+                            <label>Tamaño del archivo: </label>
+                            <p id="tamanoArchivo"></p>
+                        </div>
+                        <div class="detail-row">
+                            <label>DNI: </label>
+                            <p id="dniEmpleado"></p>
+                        </div>
+                        <div class="detail-row">
+                            <label>Empleado: </label>
+                            <p id="nombresEmpleado"></p>
+                        </div>
+                        <div class="detail-row">
+                            <label>Nombre de la sucursal: </label>
+                            <p id="nombreSucursal"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </main>
 
 <?php

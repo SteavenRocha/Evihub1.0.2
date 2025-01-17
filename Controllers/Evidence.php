@@ -24,6 +24,7 @@ class Evidence extends Controller
         die();
     }
 
+    // Función para manejar la subida del archivo
     public function upload()
     {
         $archivo = $_FILES['file'];
@@ -34,56 +35,63 @@ class Evidence extends Controller
         $id_usuario = $_SESSION['id_usuario'];
         $id_sucursal = $_SESSION['id_sucursal'];
 
-        // Llamada al modelo para guardar la información del archivo en la base de datos
-        $data = $this->model->uploadFile($id_usuario, $id_sucursal, $name, $tipo, $size);
+        // Paso 1: Subir el archivo al servidor
 
-        if ($data == "ok") {
-            $destino = 'assets/archivos';
+        $destino = 'assets/archivos';
 
-            // Crear carpeta raíz si no existe
-            if (!file_exists($destino)) {
-                mkdir($destino, 0777, true);
-            }
+        // Crear carpeta raíz si no existe
+        if (!file_exists($destino)) {
+            mkdir($destino, 0777, true);
+        }
 
-            // Crear carpeta específica de la sucursal
-            $carpetaSucursal = $destino . '/' . $id_sucursal;
-            if (!file_exists($carpetaSucursal)) {
-                mkdir($carpetaSucursal, 0777, true);
-            }
+        // Crear carpeta específica de la sucursal
+        $carpetaSucursal = $destino . '/' . $id_sucursal;
+        if (!file_exists($carpetaSucursal)) {
+            mkdir($carpetaSucursal, 0777, true);
+        }
 
-            // Crear carpeta específica del usuario dentro de la sucursal
-            $carpetaUsuario = $carpetaSucursal . '/' . $id_usuario;
-            if (!file_exists($carpetaUsuario)) {
-                mkdir($carpetaUsuario, 0777, true);
-            }
+        // Crear carpeta específica del usuario dentro de la sucursal
+        $carpetaUsuario = $carpetaSucursal . '/' . $id_usuario;
+        if (!file_exists($carpetaUsuario)) {
+            mkdir($carpetaUsuario, 0777, true);
+        }
 
-            // Crear carpeta específica de la fecha dentro del usuario
-            $fecha = date("Ymd");
-            $carpetaFecha = $carpetaUsuario . '/' . $fecha;
-            if (!file_exists($carpetaFecha)) {
-                mkdir($carpetaFecha, 0777, true);
-            }
+        // Crear carpeta específica de la fecha dentro del usuario
+        $fecha = date("Ymd");
+        $carpetaFecha = $carpetaUsuario . '/' . $fecha;
+        if (!file_exists($carpetaFecha)) {
+            mkdir($carpetaFecha, 0777, true);
+        }
 
-            // Verificar si el archivo ya existe en la carpeta de destino
+        // Verificar si el archivo ya existe en la carpeta de destino
+        $filePath = $carpetaFecha . '/' . $name;
+        $originalName = $name;
+        $counter = 1;
+
+        // Si el archivo ya existe, agregar un sufijo incremental al nombre
+        while (file_exists($filePath)) {
+            $name = pathinfo($originalName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
             $filePath = $carpetaFecha . '/' . $name;
-            $originalName = $name;
-            $counter = 1;
+            $counter++;
+        }
 
-            // Si el archivo ya existe, agregar un sufijo incremental al nombre
-            while (file_exists($filePath)) {
-                // Cambiar el nombre del archivo agregando un sufijo
-                $name = pathinfo($originalName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
-                $filePath = $carpetaFecha . '/' . $name;
-                $counter++;
+        // Mover el archivo a la carpeta con el nuevo nombre
+        if (move_uploaded_file($tmp, $filePath)) {
+            // Paso 2: Registrar la ruta en la base de datos
+
+            // Ruta del archivo relativa para la base de datos
+            $filePathRelative = str_replace('assets/', '', $filePath);
+
+            // Llamada al modelo para guardar la información en la base de datos
+            $data = $this->model->uploadFile($id_usuario, $id_sucursal, $name, $tipo, $size, $filePathRelative);
+
+            if ($data == "ok") {
+                $msg = "si"; // Éxito en la subida y registro
+            } else {
+                $msg = "error"; // Error al guardar la información en la base de datos
             }
-
-            // Mover el archivo a la carpeta con el nuevo nombre
-            move_uploaded_file($tmp, $filePath);
-
-            // Mensaje de éxito
-            $msg = "si";
         } else {
-            $msg = "error";
+            $msg = "error"; // Error al mover el archivo
         }
 
         // Enviar la respuesta en formato JSON
@@ -107,22 +115,32 @@ class Evidence extends Controller
 
     public function filtrar()
     {
-        // Verifica si los datos de los filtros están presentes y asigna valores predeterminados si es necesario
-        $sucursal_filtro = isset($_POST['sucursal_filtro']) ? $_POST['sucursal_filtro'] : null;
-        $empleado_filtro = isset($_POST['empleado_filtro']) ? $_POST['empleado_filtro'] : null;
-        $desde = isset($_POST['desde']) ? $_POST['desde'] : null;
-        $hasta = isset($_POST['hasta']) ? $_POST['hasta'] : null;
-
-        // Verifica que los datos no sean NULL o vacíos
+        $sucursal_filtro = !empty($_POST['sucursal_filtro']) ? (int)$_POST['sucursal_filtro'] : null;
+        $empleado_filtro = !empty($_POST['empleado_filtro']) ? (int)$_POST['empleado_filtro'] : null;
+        $desde = !empty($_POST['desde']) ? $_POST['desde'] : null;
+        $hasta = !empty($_POST['hasta']) ? $_POST['hasta'] : ($desde ?? null);
+        /*  // Verifica que los datos no sean NULL o vacíos
         if (is_null($sucursal_filtro) || is_null($empleado_filtro) || is_null($desde) || is_null($hasta)) {
             // Puedes manejar el caso cuando faltan parámetros
             echo json_encode(['error' => 'Faltan parámetros necesarios']);
             return;
         }
-
+ */
         // Llama a la función para obtener los resultados
         $data['filtro'] = $this->model->filtrarArchivo($sucursal_filtro, $empleado_filtro, $desde, $hasta);
+
+        if ($data['filtro'] == "datos vacios") {
+            echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
+            die();
+        }
         echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
+    public function detalles(int $id)
+    {
+        $data['details'] = $this->model->detallesArchivo($id);
+        echo json_encode($data['details'], JSON_UNESCAPED_UNICODE);
         die();
     }
 }
