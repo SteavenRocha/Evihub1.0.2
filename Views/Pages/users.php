@@ -15,6 +15,22 @@ include "Views/Modules/sidebar.php";
                     <div class="form-logo-glow"></div>
                 </div>
 
+                <div class="group">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon">
+                        <g>
+                            <path
+                                d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                        </g>
+                    </svg>
+
+                    <input
+                        id="filtroUsuarios"
+                        class="input"
+                        type="search"
+                        placeholder="Busca usuario..."
+                        name="searchbar" />
+                </div>
+
                 <button title="Agregar" id="btn_abrir_modal" type="button" class="button-add"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
                         <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
                         <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
@@ -54,38 +70,46 @@ include "Views/Modules/sidebar.php";
                 <div class="modal-body">
                     <form method="post" id="frmUsuario">
                         <input type="hidden" id="id" name="id"></input>
+
                         <div class="form-group" id="select_empleado">
                             <label for="id_empleado" class="form-label">Empleado</label>
-                            <select id="id_empleado" name="id_empleado" class="form-select" aria-label="Seleccione Empleado">
+                            <select id="id_empleado" name="id_empleado" class="form-select" required aria-label="Seleccione Empleado">
+                                <option value="">Seleccione Empleado</option>
                             </select>
+                            <div class="invalid-feedback" id="feedbackEmpleado"><!-- Por favor, seleccione un empleado -->.</div>
                         </div>
 
                         <div class="form-group" id="select_empleado_editar">
                             <div class="mb-3">
                                 <label for="empleado_editar" class="form-label">Empleado</label>
-                                <input id="empleado_editar" class="form-control" type="text" name="empleado_editar" placeholder="Usuario">
+                                <input id="empleado_editar" class="form-control" type="text" name="empleado_editar" placeholder="Empleado" disabled />
+                                <div class="invalid-feedback" id="feedbackEmpleadoEditar"><!-- Por favor, ingrese el nombre del empleado -->.</div>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="id_rol" class="form-label">Rol</label>
-                            <select id="id_rol" name="id_rol" class="form-select" aria-label="Seleccione Rol">
-
+                            <select id="id_rol" name="id_rol" class="form-select" required aria-label="Seleccione Rol">
+                                <option value="">Seleccione Rol</option>
                             </select>
+                            <div class="invalid-feedback" id="feedbackRol"><!-- Por favor, seleccione un rol -->.</div>
                         </div>
 
                         <div class="form-group">
                             <div class="mb-3">
                                 <label for="usuario" class="form-label">Usuario</label>
-                                <input id="usuario" class="form-control" type="text" name="usuario" placeholder="Usuario">
+                                <input id="usuario" class="form-control" type="email" name="usuario" placeholder="Usuario" required />
+                                <div class="invalid-feedback" id="feedbackUsuario"><!-- Por favor, ingrese un usuario válido -->.</div>
                             </div>
                         </div>
+
                         <div class="row" id="claves">
                             <div class="col md-6">
                                 <div class="form-group">
                                     <div class="mb-3">
                                         <label for="contraseña" class="form-label">Contraseña</label>
-                                        <input id="contraseña" class="form-control" type="password" name="contraseña" placeholder="Contraseña">
+                                        <input id="contraseña" class="form-control" type="password" name="contraseña" placeholder="Contraseña" required />
+                                        <div class="invalid-feedback" id="feedbackContraseña"><!-- Por favor, ingrese una contraseña. --></div>
                                     </div>
                                 </div>
                             </div>
@@ -93,7 +117,8 @@ include "Views/Modules/sidebar.php";
                                 <div class="form-group">
                                     <div class="mb-3">
                                         <label for="confirmar" class="form-label">Confirmar Contraseña</label>
-                                        <input id="confirmar" class="form-control" type="password" name="confirmar" placeholder="Confirmar contraseña">
+                                        <input id="confirmar" class="form-control" type="password" name="confirmar" placeholder="Confirmar contraseña" required />
+                                        <div class="invalid-feedback" id="feedbackConfirmar"><!-- Por favor, confirme su contraseña. --></div>
                                     </div>
                                 </div>
                             </div>

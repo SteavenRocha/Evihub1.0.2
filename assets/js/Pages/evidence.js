@@ -1,24 +1,45 @@
 if (currentPath.includes("/Evidence")) {
+
     document.addEventListener('DOMContentLoaded', function () {
-        loadRecentFiles();
-        listarFiltros();
+
+        if (idRol === 1) {
+            loadRecentFiles();
+            listarFiltros();
+        } else if (idRol === 2) {
+            loadRecentFilesEmpleado(idEmpleado);
+            listarFiltros();
+        }
+
     });
 
     // Llama a la función deseada
     const file = document.getElementById('file');
 
     $(document).ready(function () {
-        // Detectar clic en el botón "Agregar"
+
         $("#btnUpload").click(function () {
             btnNuevoArchivo();
         });
 
         $("#filter-btn").click(function (e) {
-            busquedaPorFiltro(e);
+            if (idRol === 1) {
+                busquedaPorFiltro(e);
+            } else if (idRol === 2 && idEmpleado !== null) {
+                busquedaFiltroEmpleado(idEmpleado); 
+            }
         });
 
-        $("#empleado_filtro").select2();
+        if (idRol === 1) {
+            $("#limpiar-btn").click(function () {
+                btnLimpiarFiltro();
+            });
+        } else if (idRol === 2) {
+            $("#limpiar-btn").click(function () {
+                btnLimpiarFiltroEmpleado();
+            });
+        }
 
+        $("#empleado_filtro").select2();
         $("#sucursal_filtro").select2();
     });
 
@@ -62,7 +83,11 @@ if (currentPath.includes("/Evidence")) {
                     if (res == "si") {
                         e.target.value = '';
                         notyf.success("Archivo subido con éxito");
-                        loadRecentFiles();
+                        if (idRol === 1) {
+                            loadRecentFiles();
+                        } else if (idRol === 2) {
+                            loadRecentFilesEmpleado(idEmpleado);
+                        }
                         cerrarModalUpload();
                     } else {
                         notyf.error("Error en la respuesta del servidor.");
@@ -113,7 +138,7 @@ function loadCards(data) {
                 </div>
 
                 <!-- Sección para el icono -->
-                <div class="card-icon">
+                <div class="card-icon" title="Descargar">
                     <a href="${BASE_URL}assets/${file.ruta}" download="${file.nombre_archivo}" target="_blank"> <!-- Envolvemos el SVG en un enlace -->
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-down" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z" />
@@ -130,6 +155,17 @@ function loadCards(data) {
 
 function loadRecentFiles() {
     const url = BASE_URL + "Evidence/listarRecent";
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            loadCards(data);
+        })
+        .catch(error => console.error('Error al cargar los archivos:', error));
+}
+
+function loadRecentFilesEmpleado(idEmpleado) {
+    const url = BASE_URL + "Evidence/listarRecentEmpleado/" + idEmpleado;
 
     fetch(url)
         .then(response => response.json())
@@ -248,12 +284,10 @@ function listarEmpleados(sucursales, sucursalSeleccionada = null) {
     });
 }
 
-function busquedaPorFiltro(e) {
-    e.preventDefault();
-
-    const url = BASE_URL + "Evidence/filtrar";
+function busquedaFiltroEmpleado(idEmpleado) {
+    const url = BASE_URL + "Evidence/filtrarEmpleado/" + idEmpleado;
     const frm = $("#filtros");
-    /*  console.log(frm.serialize()); */
+
     $.ajax({
         url: url,
         type: "POST",
@@ -261,17 +295,120 @@ function busquedaPorFiltro(e) {
         success: function (response) {
             try {
                 const data = JSON.parse(response);
-                if (data === "datos vacios") {
-                    notyf.error('Filtros necesarios');
-                } else {
-                    loadCards(data);
+
+                const filtrosParrafo = $("#filtros-aplicados");
+                const subtituloDiv = $("#filtro-subtitulo");
+
+                if (data.error === "No se aplicaron filtros") {
+                    notyf.error('Ingrese al menos un filtro.');
+                }
+                else if (data.filtro && data.filtro.length > 0) {
+
+                    subtituloDiv.text("Filtros buscados: ");
+
+                    let filtrosAplicadosTexto = "";
+                    data.filtros_aplicados.forEach((filtro, index) => {
+
+                        filtrosAplicadosTexto += `<span>${filtro}</span>`;
+
+                        if (index < data.filtros_aplicados.length - 1) {
+                            filtrosAplicadosTexto += " ";
+                        }
+                    });
+
+                    filtrosParrafo.html(filtrosAplicadosTexto);
+                    notyf.success('Archivos encontrados');
+                    loadCards(data.filtro);
+                }
+                else {
+                    notyf.error('No se encontraron resultados para los filtros aplicados.');
+                    subtituloDiv.text("Se muestran: Ultimos archivos subidos");
+                    filtrosParrafo.html("");
+
+                    loadRecentFilesEmpleado(idEmpleado);
+                    btnLimpiarFiltroEmpleado();
                 }
             } catch (e) {
                 console.error("Respuesta no válida:", response);
+                notyf.error('Ocurrió un error al procesar la respuesta del servidor');
             }
         },
         error: function (xhr, status, error) {
             console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
+            notyf.error('Ocurrió un error en la solicitud. Por favor, intente nuevamente.');
+        }
+    });
+}
+
+function busquedaPorFiltro(e) {
+    e.preventDefault();
+
+    const url = BASE_URL + "Evidence/filtrar";
+    const frm = $("#filtros");
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: frm.serialize(),
+        success: function (response) {
+            try {
+                const data = JSON.parse(response);
+
+                const filtrosParrafo = $("#filtros-aplicados");
+                const subtituloDiv = $("#filtro-subtitulo");
+
+                if (data.error === "No se aplicaron filtros") {
+                    notyf.error('Ingrese al menos un filtro.');
+                }
+                else if (data.filtro && data.filtro.length > 0) {
+
+                    if (idRol === 1) {
+
+
+                        subtituloDiv.text("Filtros buscados: ");
+
+                        let filtrosAplicadosTexto = "";
+                        data.filtros_aplicados.forEach((filtro, index) => {
+                            if (filtro.includes("Sucursal:")) {
+                                const nombreSucursal = data.filtro[0].nombre_sucursal;
+                                filtrosAplicadosTexto += `<span>${nombreSucursal}</span>`;
+                            } else if (filtro.includes("Empleado:")) {
+                                const nombreEmpleado = data.filtro[0].nombre_completo;
+                                filtrosAplicadosTexto += `<span>${nombreEmpleado}</span>`;
+                            } else {
+                                filtrosAplicadosTexto += `<span>${filtro}</span>`;
+                            }
+
+                            if (index < data.filtros_aplicados.length - 1) {
+                                filtrosAplicadosTexto += " ";
+                            }
+                        });
+                        filtrosParrafo.html(filtrosAplicadosTexto);
+                        notyf.success('Archivos encontrados');
+                        loadCards(data.filtro);
+                    } else if (idRol === 2) {
+                        busquedaFiltroEmpleado(idEmpleado);
+                    }
+                }
+                else {
+                    notyf.error('No se encontraron resultados para los filtros aplicados.');
+                    subtituloDiv.text("Se muestran: Ultimos archivos subidos");
+                    filtrosParrafo.html("");
+                    if (idRol === 1) {
+                        loadRecentFiles();
+                    } else if (idRol === 2) {
+                        loadRecentFilesEmpleado(idEmpleado);
+                    }
+                    btnLimpiarFiltro();
+                }
+            } catch (e) {
+                console.error("Respuesta no válida:", response);
+                notyf.error('Ocurrió un error al procesar la respuesta del servidor');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
+            notyf.error('Ocurrió un error en la solicitud. Por favor, intente nuevamente.');
         }
     });
 }
@@ -314,3 +451,52 @@ function btnDetallesArchivo(id) {
     });
 }
 
+function btnLimpiarFiltro() {
+    const filtrosParrafo = $("#filtros-aplicados");
+    const subtituloDiv = $("#filtro-subtitulo");
+
+    // Reset the filter subtitle
+    subtituloDiv.text("Se muestran:  Ultimos archivos subidos");
+
+    // Clear any applied filters text
+    filtrosParrafo.html("");
+
+    // Reset the filter form fields (for Select2)
+    $("#sucursal_filtro").val(null).trigger('change'); // Reset the sucursal filter
+    $("#empleado_filtro").val(null).trigger('change'); // Reset the empleado filter
+    $("#desde").val(""); // Clear the 'desde' date
+    $("#hasta").val(""); // Clear the 'hasta' date
+
+    // Load the most recent files (assuming this function populates the files)
+    if (idRol === 1) {
+        loadRecentFiles();
+        listarFiltros();
+    } else if (idRol === 2) {
+        loadRecentFilesEmpleado(idEmpleado);
+    }
+}
+
+function btnLimpiarFiltroEmpleado() {
+    const filtrosParrafo = $("#filtros-aplicados");
+    const subtituloDiv = $("#filtro-subtitulo");
+
+    // Reset the filter subtitle
+    subtituloDiv.text("Se muestran archivos subidos por: " + nombreCompletoUsuario);
+
+    // Clear any applied filters text
+    filtrosParrafo.html("");
+
+    // Reset the filter form fields (for Select2)
+    $("#sucursal_filtro").val(null).trigger('change'); // Reset the sucursal filter
+    $("#empleado_filtro").val(null).trigger('change'); // Reset the empleado filter
+    $("#desde").val(""); // Clear the 'desde' date
+    $("#hasta").val(""); // Clear the 'hasta' date
+
+    // Load the most recent files (assuming this function populates the files)
+    if (idRol === 1) {
+        loadRecentFiles();
+        listarFiltros();
+    } else if (idRol === 2) {
+        loadRecentFilesEmpleado(idEmpleado);
+    }
+}

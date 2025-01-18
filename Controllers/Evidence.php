@@ -24,6 +24,13 @@ class Evidence extends Controller
         die();
     }
 
+    public function listarRecentEmpleado(int $id)
+    {
+        $data['recent'] = $this->model->getRecentArchivosEmpleado($id);
+        echo json_encode($data['recent'], JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
     // Función para manejar la subida del archivo
     public function upload()
     {
@@ -119,18 +126,49 @@ class Evidence extends Controller
         $empleado_filtro = !empty($_POST['empleado_filtro']) ? (int)$_POST['empleado_filtro'] : null;
         $desde = !empty($_POST['desde']) ? $_POST['desde'] : null;
         $hasta = !empty($_POST['hasta']) ? $_POST['hasta'] : ($desde ?? null);
+        $rol = $_SESSION['id_rol'];
         /*  // Verifica que los datos no sean NULL o vacíos
         if (is_null($sucursal_filtro) || is_null($empleado_filtro) || is_null($desde) || is_null($hasta)) {
             // Puedes manejar el caso cuando faltan parámetros
             echo json_encode(['error' => 'Faltan parámetros necesarios']);
             return;
         }
- */
+        */
         // Llama a la función para obtener los resultados
-        $data['filtro'] = $this->model->filtrarArchivo($sucursal_filtro, $empleado_filtro, $desde, $hasta);
+        $data['filtro'] = $this->model->filtrarArchivo($sucursal_filtro, $empleado_filtro, $desde, $hasta, $rol);
 
         if ($data['filtro'] == "datos vacios") {
-            echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
+            echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
+            die();
+        } else if ($data['filtro'] == "Debe especificar las fechas."){
+            echo json_encode(['error' => 'No se aplicaron fechas'], JSON_UNESCAPED_UNICODE);
+            die();
+        }
+        echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
+    public function filtrarEmpleado(int $id)
+    {
+       /*  $sucursal_filtro = !empty($_POST['sucursal_filtro']) ? (int)$_POST['sucursal_filtro'] : null;
+        $empleado_filtro = !empty($_POST['empleado_filtro']) ? (int)$_POST['empleado_filtro'] : null; */
+        $desde = !empty($_POST['desde']) ? $_POST['desde'] : null;
+        $hasta = !empty($_POST['hasta']) ? $_POST['hasta'] : ($desde ?? null);
+        /*  // Verifica que los datos no sean NULL o vacíos
+        if (is_null($sucursal_filtro) || is_null($empleado_filtro) || is_null($desde) || is_null($hasta)) {
+            // Puedes manejar el caso cuando faltan parámetros
+            echo json_encode(['error' => 'Faltan parámetros necesarios']);
+            return;
+        }
+        */
+        // Llama a la función para obtener los resultados
+        $data['filtro'] = $this->model->filtrarArchivoEmpleado($desde, $hasta, $id);
+
+        if ($data['filtro'] == "datos vacios") {
+            echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
+            die();
+        } else if ($data['filtro'] == "Debe especificar las fechas."){
+            echo json_encode(['error' => 'No se aplicaron fechas'], JSON_UNESCAPED_UNICODE);
             die();
         }
         echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);

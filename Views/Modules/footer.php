@@ -13,6 +13,11 @@
 <script src="<?php echo BASE_URL; ?>assets/js/Pages/employee.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/Pages/evidence.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/Modules/sidebar.js"></script>
+<script type="text/javascript">
+    var idEmpleado = <?php echo isset($_SESSION['id_empleado']) ? $_SESSION['id_empleado'] : 'null'; ?>;
+    var idRol = <?php echo isset($_SESSION['id_rol']) ? $_SESSION['id_rol'] : 'null'; ?>;
+    var nombreCompletoUsuario = "<?php echo $_SESSION['nombre_completo'] ?? 'Usuario'; ?>";
+</script>
 
 </body>
 

@@ -53,6 +53,7 @@
   gap: 1rem;
   justify-content: flex-start;
   padding: 1rem;
+  padding-top: 0.6rem;
   width: 100%;
   height: 50%;
   height: auto;
@@ -221,23 +222,56 @@
 
 /* sub-titulo */
 .sub-titulo {
-  font-size: 18px;
+  font-size: 15px;
   color: var(--title-color);
-  font-weight: 800;
   padding-top: 0.5rem;
   padding-left: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sub-titulo .filtro-subtitulo {
+  margin: 0;
+  font-weight: 700;
+  font-size: 16px;
+  color: #000000; 
+  
+  letter-spacing: 0.5px; 
+}
+
+.sub-titulo .filtros-aplicados {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.sub-titulo .filtros-aplicados span {
+  background-color: hsl(228, 86%, 60%);
+  color: white;
+  padding: 0.1rem 0.4rem; 
+  border-radius: 4px;
+  font-weight: 600; 
+  font-size: 14px;
+  letter-spacing: 0.5px; 
 }
 
 /* FILTROS DE BUSQUEDA */
 .filtros {
   display: grid;
-  grid-template-columns: 1fr 1fr 130px 130px 45px;
-  column-gap: 16px;
+  grid-template-columns: 1fr 1fr 130px 130px 90px;
+  column-gap: 15px;
   padding-left: 1.5rem;
   padding-right: 1.4rem;
   padding-bottom: 1rem;
   background-color: var(--body-color);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filtros > * {
+  min-width: 0; 
 }
 
 .titulo-filtro {
@@ -246,16 +280,18 @@
   font-weight: bold;
   text-align: left;
   color: #333;
+  letter-spacing: 0.5px; 
 }
 
 .filtro-empleado,
 .filtro-sucursal,
 .fecha-desde,
 .fecha-hasta,
-.button-filter {
+.contenedor-btn-filter {
   display: flex;
   flex-direction: column;
   width: 100%;
+  letter-spacing: 0.5px; 
 }
 
 label {
@@ -365,8 +401,14 @@ input[type="date"]:focus {
 
 /* Botón */
 .contenedor-btn-filter {
-  margin-top: 60%;
+  margin-top: 30%; 
   height: 40px;
+  width: 90px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
 }
 
 .filter-btn {
@@ -377,6 +419,27 @@ input[type="date"]:focus {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  background-color: var(--first-color);
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+}
+.filter-btn:hover {
+  background-color: var(--first-color-dark);
+}
+
+.limpiar-btn svg {
+  color: white;
+}
+
+.limpiar-btn:hover {
+  background-color: var(--first-color-dark);
+}
+
+.limpiar-btn {
+  width: 40px;
+  height: 40px;
+  
   background-color: var(--first-color);
   border-radius: 10px;
   cursor: pointer;

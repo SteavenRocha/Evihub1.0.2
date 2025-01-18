@@ -37,23 +37,27 @@ include "Views/Modules/sidebar.php";
                 <form method="post" class="filtros" id="filtros">
                     <label class="titulo-filtro">Filtro de busqueda</label>
 
-                    <div class="filtro-sucursal">
+                    <div class="filtro-sucursal bloqueado">
                         <label for="sucursal_filtro">Sucursal:</label>
-                        <select name="sucursal_filtro" class="form-select" id="sucursal_filtro" aria-label="Seleccione sucursal">
-                            <!-- <option selected>Seleccione sucursal</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option> -->
+                        <select
+                            name="sucursal_filtro"
+                            class="form-select"
+                            id="sucursal_filtro"
+                            aria-label="Seleccione sucursal"
+                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled' : ''; ?>>
+                            <!-- Opciones dinámicas -->
                         </select>
                     </div>
 
                     <div class="filtro-empleado">
                         <label for="empleado_filtro">Empleado:</label>
-                        <select name="empleado_filtro" class="form-select" id="empleado_filtro" aria-label="Seleccione empleado">
-                            <!--  <option selected>Seleccione empleado</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option> -->
+                        <select
+                            name="empleado_filtro"
+                            class="form-select"
+                            id="empleado_filtro"
+                            aria-label="Seleccione empleado"
+                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled' : ''; ?>>
+                            <!-- Opciones dinámicas -->
                         </select>
                     </div>
 
@@ -67,17 +71,33 @@ include "Views/Modules/sidebar.php";
                         <input type="date" id="hasta" name="hasta">
                     </div>
 
-                    <div class="contenedor-btn-filter" title="Aplicar filtros">
-                        <button type="button" class="filter-btn" id="filter-btn">
+                    <div class="contenedor-btn-filter">
+                        <button type="button" class="filter-btn" id="filter-btn" title="Aplicar filtros">
                             <span class="bar bar1"></span>
                             <span class="bar bar2"></span>
                             <span class="bar bar1"></span>
                         </button>
+
+                        <button type="button" class="limpiar-btn" id="limpiar-btn" title="Limpiar filtros">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-brush" viewBox="0 0 16 16">
+                                <path d="M15.825.14a.5.5 0 0 1 .034.705l-9.01 9.89c-.288.318-.352.75-.293 1.132.057.377.213.784.465 1.036a2.5 2.5 0 1 1-3.536 0c.252-.252.659-.408 1.036-.465.382-.059.814.005 1.132.293l9.89-9.01a.5.5 0 0 1 .705.034z" />
+                            </svg>
+                        </button>
                     </div>
+
                 </form>
 
                 <div class="sub-titulo">
-                    Archivos recientes
+                    <p class="filtro-subtitulo" id="filtro-subtitulo">
+                        <?php
+                        if ($_SESSION['id_rol'] == 1) {
+                            echo "Se muestran: Últimos archivos subidos";
+                        } else {
+                            echo "Se muestran archivos subidos por: " . (isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : 'Usuario');
+                        }
+                        ?>
+                    </p>
+                    <p class="filtros-aplicados" id="filtros-aplicados"></p>
                 </div>
 
                 <div id="cards-container">
@@ -166,8 +186,6 @@ include "Views/Modules/sidebar.php";
             </div>
         </div>
     </div>
-
-
 </main>
 
 <?php

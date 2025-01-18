@@ -22,9 +22,35 @@ class EvidenceModel extends Query
                     estado_archivo = 1
                 ORDER BY 
                     fecha_subida DESC
-                LIMIT 10";
+                LIMIT 50";
         $data['users'] = $this->selectAll($sql);
         return $data['users'];
+    }
+
+    public function getRecentArchivosEmpleado(?int $id_empleado)
+    {
+        $sql = "SELECT 
+                    a.id_archivo,
+                    a.nombre_archivo,
+                    a.tipo_archivo,
+                    a.fecha_subida,
+                    a.ruta,
+                    a.size
+                FROM 
+                    ARCHIVO a
+                JOIN 
+                    USUARIO u ON a.id_usuario = u.id_usuario
+                JOIN
+                    EMPLEADO e ON u.id_empleado = e.id_empleado
+                WHERE 
+                    estado_archivo = 1
+                AND 
+                    e.id_empleado = $id_empleado
+                ORDER BY 
+                    fecha_subida DESC
+                LIMIT 50";
+        $data['archivos'] = $this->selectAll($sql);
+        return $data['archivos'];
     }
 
     public function uploadFile(int $id_usuario, int $id_sucursal, string $name, string $tipo, string $size, string $filePathRelative)
@@ -66,52 +92,112 @@ class EvidenceModel extends Query
         return $data['sucursal'];
     }
 
-    public function filtrarArchivo(?int $sucursal_filtro, ?int $empleado_filtro, ?string $desde, ?string $hasta)
+    public function filtrarArchivo(?int $sucursal_filtro, ?int $empleado_filtro, ?string $desde, ?string $hasta, ?int $rol)
     {
         $sql = "SELECT 
-                    a.id_archivo,
-                    a.nombre_archivo,
-                    a.tipo_archivo,
-                    a.fecha_subida,
-                    a.estado_archivo,
-                    a.size,
-                    e.id_empleado,
-                    e.dni,
-                    e.nombres,
-                    e.ape_paterno,
-                    e.ape_materno,
-                    s.id_sucursal,
-                    s.nombre_sucursal,
-                    u.id_usuario,
-                    u.usuario
-                FROM 
-                    ARCHIVO a
-                JOIN 
-                    SUCURSAL s ON a.id_sucursal = s.id_sucursal
-                JOIN 
-                    USUARIO u ON a.id_usuario = u.id_usuario
-                JOIN
-                    EMPLEADO e ON u.id_empleado = e.id_empleado
-                WHERE 1=1";
+                a.id_archivo,
+                a.nombre_archivo,
+                a.tipo_archivo,
+                a.fecha_subida,
+                a.estado_archivo,
+                a.size,
+                e.id_empleado,
+                e.dni,
+                CONCAT(e.nombres, ' ', e.ape_paterno, ' ', e.ape_materno) AS nombre_completo,
+                s.id_sucursal,
+                s.nombre_sucursal,
+                u.id_usuario,
+                u.usuario
+            FROM 
+                ARCHIVO a
+            JOIN 
+                SUCURSAL s ON a.id_sucursal = s.id_sucursal
+            JOIN 
+                USUARIO u ON a.id_usuario = u.id_usuario
+            JOIN
+                EMPLEADO e ON u.id_empleado = e.id_empleado
+            WHERE 1=1";
 
-        if (!empty($sucursal_filtro)) {
-            $sql .= " AND s.id_sucursal = $sucursal_filtro";
-        }
+        $filtrosAplicados = [];
 
-        if (!empty($empleado_filtro)) {
-            $sql .= " AND e.id_empleado = $empleado_filtro";
-        }
-
-        if (!empty($desde) && !empty($hasta)) {
+        // Validación por rol
+        if ($rol === 2) { // Si el rol es 2, solo permite buscar por fechas
+            if (empty($desde) || empty($hasta)) {
+                return "Debe especificar las fechas.";
+            }
             $sql .= " AND DATE(a.fecha_subida) BETWEEN '$desde' AND '$hasta'";
+            $filtrosAplicados[] = "Desde $desde hasta $hasta";
+        } else if ($rol === 1) { // Si el rol es 1, permite todos los filtros
+            if (!empty($sucursal_filtro)) {
+                $sql .= " AND s.id_sucursal = $sucursal_filtro";
+                $filtrosAplicados[] = "Sucursal: $sucursal_filtro";
+            }
+
+            if (!empty($empleado_filtro)) {
+                $sql .= " AND e.id_empleado = $empleado_filtro";
+                $filtrosAplicados[] = "Empleado: $empleado_filtro";
+            }
+
+            if (!empty($desde) && !empty($hasta)) {
+                $sql .= " AND DATE(a.fecha_subida) BETWEEN '$desde' AND '$hasta'";
+                $filtrosAplicados[] = "Desde $desde hasta $hasta";
+            }
+        } else {
+            return "Rol no válido.";
         }
 
-        if (empty($sucursal_filtro) && empty($empleado_filtro) && empty($desde) && empty($hasta)) {
-            return "datos vacios";
+        // Si no hay filtros aplicados y el rol es 1, devuelve mensaje de datos vacíos
+        if ($rol === 1 && empty($sucursal_filtro) && empty($empleado_filtro) && empty($desde) && empty($hasta)) {
+            return "Datos vacíos";
         }
 
         $data['filtro'] = $this->selectAll($sql);
-        return $data['filtro'];
+        $data['filtros_aplicados'] = $filtrosAplicados;
+
+        return $data;
+    }
+
+    public function filtrarArchivoEmpleado(?string $desde, ?string $hasta, ?int $id)
+    {
+        $sql = "SELECT 
+                a.id_archivo,
+                a.nombre_archivo,
+                a.tipo_archivo,
+                a.fecha_subida,
+                a.estado_archivo,
+                a.size,
+                e.id_empleado,
+                e.dni,
+                CONCAT(e.nombres, ' ', e.ape_paterno, ' ', e.ape_materno) AS nombre_completo,
+                s.id_sucursal,
+                s.nombre_sucursal,
+                u.id_usuario,
+                u.usuario
+            FROM 
+                ARCHIVO a
+            JOIN 
+                SUCURSAL s ON a.id_sucursal = s.id_sucursal
+            JOIN 
+                USUARIO u ON a.id_usuario = u.id_usuario
+            JOIN
+                EMPLEADO e ON u.id_empleado = e.id_empleado
+            WHERE u.id_empleado = $id";
+
+        $filtrosAplicados = [];
+
+        if (!empty($desde) && !empty($hasta)) {
+            $sql .= " AND DATE(a.fecha_subida) BETWEEN '$desde' AND '$hasta'";
+            $filtrosAplicados[] = "Desde $desde hasta $hasta";
+        }
+
+        if (empty($desde) && empty($hasta)) {
+            return "Datos vacíos";
+        }
+
+        $data['filtro'] = $this->selectAll($sql);
+        $data['filtros_aplicados'] = $filtrosAplicados;
+
+        return $data;
     }
 
     /*     public function filtrarArchivo(?int $sucursal_filtro, ?int $empleado_filtro, ?string $desde, ?string $hasta)
@@ -348,4 +434,3 @@ class EvidenceModel extends Query
         return $data['details'];
     }
 }
-?>

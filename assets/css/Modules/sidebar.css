@@ -61,7 +61,10 @@
     font-weight: var(--font-strong-bold);
     color: var(--title-color);
     transition: color .3s;
-
+    width: 95%;
+    white-space: nowrap;
+    overflow: hidden;  
+    text-overflow: ellipsis;
     margin-bottom: 0;
 }
 

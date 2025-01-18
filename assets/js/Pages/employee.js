@@ -87,6 +87,248 @@ const currentPathEmployee = window.location.pathname;
 if (currentPathEmployee.includes("/Employee")) {
     // Llama a la función deseada
     document.addEventListener('DOMContentLoaded', loadEmployees);
+
+    document.getElementById('filtroEmpleados').addEventListener('input', function () {
+        const filtro = this.value.toLowerCase();
+        const filas = document.querySelectorAll('#tableEmployees tr');
+    
+        filas.forEach(fila => {
+            const textoFila = fila.textContent.toLowerCase();
+            if (textoFila.includes(filtro)) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    });
+}
+
+// Validar DNI
+function handleDniValidation(event) {
+    const dniInput = event.target;
+    const feedback = document.getElementById("feedbackDNI");
+
+    if (!/^\d*$/.test(dniInput.value)) {
+        feedback.textContent = "Por favor, solo ingresar números.";
+        dniInput.classList.add("is-invalid");
+        dniInput.classList.remove("is-valid");
+    } else if (dniInput.value.length === 0 || dniInput.value.length < 8) {
+        feedback.textContent = "";
+        dniInput.classList.remove("is-invalid", "is-valid");
+    } else if (dniInput.value.length === 8) {
+        feedback.textContent = "";
+        dniInput.classList.remove("is-invalid");
+        dniInput.classList.add("is-valid");
+    } else {
+        dniInput.classList.remove("is-invalid", "is-valid");
+        feedback.textContent = "";
+    }
+}
+
+// Validar Nombres
+function handleNombresValidation(event) {
+    const nombresInput = event.target;
+    const feedback = document.getElementById("feedbackNombres");
+    const value = nombresInput.value.trim();
+    const words = value.split(/\s+/);
+
+    if (value.length === 0 || words.length < 3) {
+        feedback.textContent = "";
+        nombresInput.classList.remove("is-invalid", "is-valid");
+    } else {
+        feedback.textContent = "";
+        nombresInput.classList.remove("is-invalid");
+        nombresInput.classList.add("is-valid");
+    }
+}
+
+// Validar Celular
+function handleCelularValidation(event) {
+    const celularInput = event.target;
+    const feedback = document.getElementById("feedbackCelular");
+    const value = celularInput.value.trim();
+
+    if (value.length === 0) {
+        feedback.textContent = "";
+        celularInput.classList.remove("is-invalid", "is-valid");
+    } else if (!/^\d*$/.test(value)) {
+        feedback.textContent = "Por favor, solo ingresar números.";
+        celularInput.classList.add("is-invalid");
+        celularInput.classList.remove("is-valid");
+    } else if (value.length < 9) {
+        feedback.textContent = "El Celular debe tener mínimo 9 dígitos.";
+        celularInput.classList.add("is-invalid");
+        celularInput.classList.remove("is-valid");
+    } else {
+        feedback.textContent = "";
+        celularInput.classList.remove("is-invalid");
+        celularInput.classList.add("is-valid");
+    }
+}
+
+// Validar Sucursal
+function handleSucursalValidation(event) {
+    const selectSucursal = event.target;
+    const feedback = document.getElementById("feedbackSucursal");
+
+    if (selectSucursal.value === "") {
+        feedback.textContent = "Por favor, seleccione una sucursal.";
+        selectSucursal.classList.add("is-invalid");
+        selectSucursal.classList.remove("is-valid");
+    } else {
+        feedback.textContent = "";
+        selectSucursal.classList.remove("is-invalid");
+        selectSucursal.classList.add("is-valid");
+    }
+}
+
+// Validar Campos al Registrar Empleado
+function validateEmpleadoRegistrar(dniInput, nombresInput, celularInput, selectSucursal, feedbackDNI, feedbackNombres, feedbackCelular, feedbackSucursal) {
+    let valid = true;
+
+    // Validar DNI
+    if (!/^\d*$/.test(dniInput.value) || dniInput.value.trim() === "" || dniInput.value.length !== 8) {
+        feedbackDNI.textContent = "El DNI debe tener exactamente 8 dígitos.";
+        dniInput.classList.add("is-invalid");
+        dniInput.classList.remove("is-valid");
+        valid = false;
+    } else {
+        feedbackDNI.textContent = "";
+        dniInput.classList.remove("is-invalid");
+        dniInput.classList.add("is-valid");
+    }
+
+    // Validar Nombres
+    const nombresValue = nombresInput.value.trim();
+    const words = nombresValue.split(/\s+/);
+    if (nombresValue === "" || words.length < 3) {
+        feedbackNombres.textContent = "Por favor ingresar mínimo 1 nombre y 2 apellidos";
+        nombresInput.classList.add("is-invalid");
+        nombresInput.classList.remove("is-valid");
+        valid = false;
+    } else {
+        feedbackNombres.textContent = "";
+        nombresInput.classList.remove("is-invalid");
+        nombresInput.classList.add("is-valid");
+    }
+
+    // Validar Celular
+    const celularValue = celularInput.value.trim();
+    if (!/^\d*$/.test(celularValue) || celularValue.length < 9) {
+        feedbackCelular.textContent = "El Celular debe tener mínimo 9 dígitos.";
+        celularInput.classList.add("is-invalid");
+        celularInput.classList.remove("is-valid");
+        valid = false;
+    } else {
+        feedbackCelular.textContent = "";
+        celularInput.classList.remove("is-invalid");
+        celularInput.classList.add("is-valid");
+    }
+
+    // Validar Sucursal
+    if (selectSucursal.value === "") {
+        feedbackSucursal.textContent = "Por favor, seleccione una sucursal.";
+        selectSucursal.classList.add("is-invalid");
+        selectSucursal.classList.remove("is-valid");
+        valid = false;
+    } else {
+        feedbackSucursal.textContent = "";
+        selectSucursal.classList.remove("is-invalid");
+        selectSucursal.classList.add("is-valid");
+    }
+
+    return valid;
+}
+
+// Asignar Event Listeners
+function asignarEventListeners() {
+    const dniInput = document.getElementById("dni");
+    const nombresInput = document.getElementById("nombres_empleado");
+    const celularInput = document.getElementById("celular");
+    const selectSucursal = document.getElementById("id_sucursal_empleado");
+    const btnRegistrar = document.getElementById("btn_accion_registrar_empleado");
+    const btnModificar = document.getElementById("btn_accion_editar_empleado");
+
+    // Evento de validación en tiempo real
+    dniInput.addEventListener("input", handleDniValidation);
+    nombresInput.addEventListener("input", handleNombresValidation);
+    celularInput.addEventListener("input", handleCelularValidation);
+    selectSucursal.addEventListener("change", handleSucursalValidation);
+
+    // Validación al Registrar
+    btnRegistrar.addEventListener("click", (e) => {
+        e.preventDefault();
+        const feedbackDNI = document.getElementById("feedbackDNI");
+        const feedbackNombres = document.getElementById("feedbackNombres");
+        const feedbackCelular = document.getElementById("feedbackCelular");
+        const feedbackSucursal = document.getElementById("feedbackSucursal");
+
+        if (validateEmpleadoRegistrar(dniInput, nombresInput, celularInput, selectSucursal, feedbackDNI, feedbackNombres, feedbackCelular, feedbackSucursal)) {
+            // Aquí va la lógica para registrar el empleado
+            console.log("Empleado registrado correctamente");
+        }
+    });
+
+    // Validación al Modificar
+    btnModificar.addEventListener("click", (e) => {
+        e.preventDefault();
+        const feedbackDNI = document.getElementById("feedbackDNI");
+        const feedbackNombres = document.getElementById("feedbackNombres");
+        const feedbackCelular = document.getElementById("feedbackCelular");
+        const feedbackSucursal = document.getElementById("feedbackSucursal");
+
+        if (validateEmpleadoRegistrar(dniInput, nombresInput, celularInput, selectSucursal, feedbackDNI, feedbackNombres, feedbackCelular, feedbackSucursal)) {
+            // Aquí va la lógica para modificar el empleado
+            console.log("Empleado modificado correctamente");
+        }
+    });
+}
+
+function registrarEmpleado(e) {
+    e.preventDefault();
+
+    // Verificar si todos los campos tienen la clase "is-valid"
+    const campos = [
+        document.getElementById("dni"),
+        document.getElementById("nombres_empleado"),
+        document.getElementById("celular"),
+        document.getElementById("id_sucursal_empleado"),
+    ];
+
+    const isValid = campos.every(campo => campo.classList.contains("is-valid"));
+
+    if (isValid) {
+        const url = BASE_URL + "Employee/registrar";
+        const frm = $("#frmEmpleado");
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: frm.serialize(), // Serializa los datos del formulario
+            success: function (response) {
+                try {
+                    const res = JSON.parse(response);
+
+                    if (res == "si") {
+                        notyf.success('Empleado registrado con éxito');
+                        cerrarModalEmpleado();
+                        loadEmployees();
+                    } else if (res == "invalido") {
+                        notyf.error('Formato de nombre inválido');
+                    } else if (res == "existe") {
+                        notyf.error('Empleado ya existe');
+                    }
+                } catch (e) {
+                    console.log("Respuesta no es JSON: " + response);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
+            }
+        });
+    } else {
+        notyf.error('Por favor, corrija los errores antes de registrar.');
+    }
 }
 
 /* MODAL */
@@ -94,6 +336,8 @@ $(document).ready(function () {
 
     $("#btn_abrir_modal_empleado").click(function () {
         frmEmpleado();
+        limpiarFormularioEmpleado();
+        asignarEventListeners();
     });
 
     $("#btn_accion_registrar_empleado").click(function (e) {
@@ -137,54 +381,6 @@ function frmEmpleado() {
     });
 }
 
-function registrarEmpleado(e) {
-    e.preventDefault();
-
-    const dni = document.getElementById("dni");
-    const nombres_empleado = document.getElementById("nombres_empleado");
-    const celular = document.getElementById("celular");
-    const id_sucursal_empleado = document.getElementById("id_sucursal_empleado");
-    
-    if (dni.value == "" || nombres_empleado.value == "" || celular.value == "" || id_sucursal_empleado.value == "") {
-
-        notyf.error('Todos los campos son necesarios');
-
-    } else {
-        const url = BASE_URL + "Employee/registrar";
-        const frm = $("#frmEmpleado");
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: frm.serialize(),  // Serializa los datos del formulario
-            success: function (response) {
-
-                try {
-                    const res = JSON.parse(response);
-
-                    if (res == "si") {
-
-                        notyf.success('Empleado registrado con exito');
-                        limpiarFormularioEmpleado();
-                        cerrarModalEmpleado();
-
-                        loadEmployees();
-                    } else if ( res == "invalido") {
-                        notyf.error('Formato de nombre invalido');
-                    } else if (res == "existe" ) {
-                        notyf.error('Empleado ya existe');
-                    }
-                } catch (e) {
-                    console.log("Respuesta no es JSON: " + response);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
-            }
-        });
-    }
-}
-
 function btnNuevoEmpleado() {
     document.getElementById("titulo_modal_empleado").innerHTML = "Agregar Nuevo Empleado";
     //document.getElementById("btn_accion").innerHTML = "Registrar";
@@ -201,6 +397,17 @@ function btnNuevoEmpleado() {
 function limpiarFormularioEmpleado() {
     const frm = document.getElementById("frmEmpleado");
     frm.reset();
+    // Limpiar las clases de validación
+    document.getElementById("dni").classList.remove("is-invalid", "is-valid");
+    document.getElementById("nombres_empleado").classList.remove("is-invalid", "is-valid");
+    document.getElementById("celular").classList.remove("is-invalid", "is-valid");
+    document.getElementById("id_sucursal_empleado").classList.remove("is-invalid", "is-valid");
+
+    // Limpiar los campos de texto
+    document.getElementById("dni").value = "";
+    document.getElementById("nombres_empleado").value = "";
+    document.getElementById("celular").value = "";
+    document.getElementById("id_sucursal_empleado").value = "";
 }
 
 function cerrarModalEmpleado() {
@@ -210,48 +417,59 @@ function cerrarModalEmpleado() {
 function modificarEmpleado(e) {
     e.preventDefault();
 
-    const dni = document.getElementById("dni");
-    const nombres_empleado = document.getElementById("nombres_empleado");
-    const celular = document.getElementById("celular");
-    const id_sucursal_empleado = document.getElementById("id_sucursal_empleado");
+    // Verificar si todos los campos tienen la clase "is-valid"
+    const campos = [
+        document.getElementById("dni"),
+        document.getElementById("nombres_empleado"),
+        document.getElementById("celular"),
+        document.getElementById("id_sucursal_empleado"),
+    ];
 
-    if (dni.value == "" || nombres_empleado.value == "" || celular.value == "" || id_sucursal_empleado.value == "") {
+    const isValid = campos.every(campo => campo.classList.contains("is-valid"));
 
-        notyf.error('Todos los campos son necesarios');
+    if (isValid) {
 
-    } else {
-        const url = BASE_URL + "Employee/modificar";
-        const frm = $("#frmEmpleado");
+        const dni = document.getElementById("dni");
+        const nombres_empleado = document.getElementById("nombres_empleado");
+        const celular = document.getElementById("celular");
+        const id_sucursal_empleado = document.getElementById("id_sucursal_empleado");
 
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: frm.serialize(),  // Serializa los datos del formulario
-            success: function (response) {
+        if (dni.value == "" || nombres_empleado.value == "" || celular.value == "" || id_sucursal_empleado.value == "") {
 
-                try {
-                    const res = JSON.parse(response);
+            notyf.error('Todos los campos son necesarios');
 
-                   /*  console.log(res); */
+        } else {
+            const url = BASE_URL + "Employee/modificar";
+            const frm = $("#frmEmpleado");
 
-                    if (res == "modificado") {
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: frm.serialize(),  // Serializa los datos del formulario
+                success: function (response) {
 
-                        notyf.success('Empleado modificado con exito');
-                        limpiarFormularioEmpleado();
-                        cerrarModalEmpleado();
+                    try {
+                        const res = JSON.parse(response);
 
-                        loadEmployees();
-                    } else {
-                        notyf.error('Empleado ya existe');
+                        /*  console.log(res); */
+
+                        if (res == "modificado") {
+
+                            notyf.success('Empleado modificado con exito');
+                            cerrarModalEmpleado();
+                            loadEmployees();
+                        } else {
+                            notyf.error('Empleado ya existe');
+                        }
+                    } catch (e) {
+                        console.log("Respuesta no es JSON: " + response);
                     }
-                } catch (e) {
-                    console.log("Respuesta no es JSON: " + response);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
-            }
-        });
+            });
+        }
     }
 }
 
@@ -260,13 +478,19 @@ function btnDatosEditarEmpleado() {
     //document.getElementById("btn_accion").innerHTML = "Modificar";
     document.getElementById("btn_accion_registrar_empleado").classList.add("d-none");
     document.getElementById("btn_accion_editar_empleado").classList.remove("d-none");
-   /*  document.getElementById("select_empleado").classList.add("d-none");
-    document.getElementById("select_empleado_editar").classList.remove("d-none"); */
+    /*  document.getElementById("select_empleado").classList.add("d-none");
+     document.getElementById("select_empleado_editar").classList.remove("d-none"); */
+    limpiarFormularioEmpleado();
 }
 
 function btnEditarEmpleado(id_empleado) {
-
+    asignarEventListeners();
     btnDatosEditarEmpleado();
+
+    document.getElementById("dni").classList.add("is-valid");
+    document.getElementById("nombres_empleado").classList.add("is-valid");
+    document.getElementById("celular").classList.add("is-valid");
+    document.getElementById("id_sucursal_empleado").classList.add("is-valid");
 
     const url = BASE_URL + "Employee/editar/" + id_empleado;
 
@@ -403,3 +627,4 @@ function btnHabilitarEmpleado(id_empleado) {
         }
     });
 }
+
