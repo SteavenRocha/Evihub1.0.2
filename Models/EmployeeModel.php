@@ -22,7 +22,9 @@ class EmployeeModel extends Query
                 FROM 
                     EMPLEADO e
                 INNER JOIN 
-                    SUCURSAL s ON e.id_sucursal = s.id_sucursal";
+                    SUCURSAL s ON e.id_sucursal = s.id_sucursal
+                ORDER BY 
+                    e.id_empleado DESC";
         $data['employees'] = $this->selectAll($sql);
         return $data['employees'];
     }

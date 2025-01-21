@@ -25,7 +25,9 @@ class UserModel extends Query
                 INNER JOIN 
                     empleado e ON u.id_empleado = e.id_empleado
                 INNER JOIN 
-                    rol r ON u.id_rol = r.id_rol";
+                    rol r ON u.id_rol = r.id_rol
+                ORDER BY 
+                    u.id_usuario DESC";
         $data['users'] = $this->selectAll($sql);
         return $data['users'];
     }

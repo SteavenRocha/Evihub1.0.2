@@ -12,10 +12,10 @@
 
 .form-titulo {
     margin-left: 1.3rem;
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     text-align: center;
     color: var(--title-color);
-    font-weight: 800;
+    font-weight: 850;
     position: relative;
     overflow: hidden;
     letter-spacing: 1px;

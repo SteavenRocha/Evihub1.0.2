@@ -140,7 +140,7 @@ class Evidence extends Controller
         if ($data['filtro'] == "datos vacios") {
             echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
             die();
-        } else if ($data['filtro'] == "Debe especificar las fechas."){
+        } else if ($data['filtro'] == "Debe especificar las fechas.") {
             echo json_encode(['error' => 'No se aplicaron fechas'], JSON_UNESCAPED_UNICODE);
             die();
         }
@@ -150,7 +150,7 @@ class Evidence extends Controller
 
     public function filtrarEmpleado(int $id)
     {
-       /*  $sucursal_filtro = !empty($_POST['sucursal_filtro']) ? (int)$_POST['sucursal_filtro'] : null;
+        /*  $sucursal_filtro = !empty($_POST['sucursal_filtro']) ? (int)$_POST['sucursal_filtro'] : null;
         $empleado_filtro = !empty($_POST['empleado_filtro']) ? (int)$_POST['empleado_filtro'] : null; */
         $desde = !empty($_POST['desde']) ? $_POST['desde'] : null;
         $hasta = !empty($_POST['hasta']) ? $_POST['hasta'] : ($desde ?? null);
@@ -167,7 +167,7 @@ class Evidence extends Controller
         if ($data['filtro'] == "datos vacios") {
             echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
             die();
-        } else if ($data['filtro'] == "Debe especificar las fechas."){
+        } else if ($data['filtro'] == "Debe especificar las fechas.") {
             echo json_encode(['error' => 'No se aplicaron fechas'], JSON_UNESCAPED_UNICODE);
             die();
         }
@@ -181,4 +181,152 @@ class Evidence extends Controller
         echo json_encode($data['details'], JSON_UNESCAPED_UNICODE);
         die();
     }
+
+    public function zip()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Leer datos enviados desde el frontend
+            $rawData = file_get_contents('php://input');
+            $data = json_decode($rawData, true);
+
+            // Validar si los datos fueron correctamente decodificados
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Error al decodificar los datos JSON.']);
+                exit;
+            }
+
+            // Crear un nombre para el archivo ZIP
+            $zipFileName = 'archivos_seleccionados_' . date('Ymd_His') . '.zip';
+
+            // Ruta completa donde se guardará temporalmente el ZIP
+            $zipFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $zipFileName;
+
+            // Crear el archivo ZIP
+            $zip = new ZipArchive();
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+                http_response_code(500);
+                echo json_encode(['error' => 'No se pudo crear el archivo ZIP.']);
+                exit;
+            }
+
+            // Definir la base de la ruta del sistema
+            $baseFilePath = $_SERVER['DOCUMENT_ROOT'] . '/EviHub1.0.2/assets/';
+
+            // Agregar los archivos al ZIP
+            foreach ($data as $file) {
+                if (isset($file['ruta'])) {
+                    // Crear la ruta absoluta del archivo
+                    $filePath = $baseFilePath . $file['ruta'];
+
+                    // Verificar si el archivo existe
+                    if (file_exists($filePath)) {
+                        // Agregar el archivo al ZIP usando el nombre original
+                        $zip->addFile($filePath, basename($filePath));
+                    } else {
+                        // Registrar un error si el archivo no existe
+                        error_log("El archivo no existe: " . $filePath);
+                    }
+                } else {
+                    error_log("Ruta no definida en los datos recibidos.");
+                }
+            }
+
+            // Cerrar el archivo ZIP
+            $zip->close();
+
+            // Forzar la descarga del ZIP al cliente
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+            header('Content-Length: ' . filesize($zipFilePath));
+
+            // Leer y enviar el archivo ZIP
+            readfile($zipFilePath);
+
+            // Eliminar el archivo temporal
+            unlink($zipFilePath);
+
+            exit;
+        } else {
+            http_response_code(405);
+            echo "Método no permitido.";
+            exit;
+        }
+    }
+
+/*     public function zip()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Leer datos enviados desde el frontend
+            $rawData = file_get_contents('php://input');
+            $data = json_decode($rawData, true);
+
+            // Validar si los datos fueron correctamente decodificados
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Error al decodificar los datos JSON.']);
+                exit;
+            }
+
+            // Crear un nombre para el archivo ZIP
+            $zipFileName = 'archivos_seleccionados_' . date('Ymd_His') . '.zip';
+
+            // Ruta completa donde se guardará temporalmente el ZIP
+            $zipFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $zipFileName;
+
+            // Crear el archivo ZIP
+            $zip = new ZipArchive();
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+                http_response_code(500);
+                echo json_encode(['error' => 'No se pudo crear el archivo ZIP.']);
+                exit;
+            }
+
+            // Definir la base de la ruta del sistema
+            $baseFilePath = $_SERVER['DOCUMENT_ROOT'] . '/EviHub1.0.2/assets/';
+
+            // Agregar los archivos al ZIP, manteniendo la estructura de carpetas
+            foreach ($data as $file) {
+                if (isset($file['ruta'])) {
+                    // Crear la ruta absoluta del archivo
+                    $filePath = $baseFilePath . $file['ruta'];
+
+                    // Verificar si el archivo existe
+                    if (file_exists($filePath)) {
+                        // Obtener la ruta relativa para el archivo dentro del ZIP
+                        // Esto mantiene las carpetas originales dentro del ZIP
+                        $relativePath = str_replace($baseFilePath, '', $filePath);
+
+                        // Agregar el archivo al ZIP usando la ruta relativa
+                        $zip->addFile($filePath, $relativePath);
+                    } else {
+                        // Registrar un error si el archivo no existe
+                        error_log("El archivo no existe: " . $filePath);
+                    }
+                } else {
+                    error_log("Ruta no definida en los datos recibidos.");
+                }
+            }
+
+            // Cerrar el archivo ZIP
+            $zip->close();
+
+            // Forzar la descarga del ZIP al cliente
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+            header('Content-Length: ' . filesize($zipFilePath));
+
+            // Leer y enviar el archivo ZIP
+            readfile($zipFilePath);
+
+            // Eliminar el archivo temporal
+            unlink($zipFilePath);
+
+            exit;
+        } else {
+            http_response_code(405);
+            echo "Método no permitido.";
+            exit;
+        }
+    } */
 }

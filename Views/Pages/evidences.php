@@ -9,15 +9,20 @@ include "Views/Modules/sidebar.php";
     <div class="contenido" id="main">
         <div class="cuerpo-tabla">
             <section class="table__header">
+                
+                <button id="download-zip-btn"
+                    type="button"
+                    class="button-zip">
+                    Descargar ZIP
+                </button>
 
                 <div class="form-titulo">
                     <span>Archivos</span>
                     <div class="form-logo-glow"></div>
                 </div>
 
-                <button title="Agregar" id="btnUpload" type="button" class="button-add"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
-                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
-                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
+                <button title="Agregar" id="btnUpload" type="button" class="button-add"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0" />
                     </svg>AGREGAR</button>
             </section>
 
@@ -35,28 +40,29 @@ include "Views/Modules/sidebar.php";
                 </div> -->
 
                 <form method="post" class="filtros" id="filtros">
+
                     <label class="titulo-filtro">Filtro de busqueda</label>
 
-                    <div class="filtro-sucursal bloqueado">
+                    <div class="filtro-sucursal <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'bloqueado' : ''; ?>">
                         <label for="sucursal_filtro">Sucursal:</label>
                         <select
                             name="sucursal_filtro"
                             class="form-select"
                             id="sucursal_filtro"
                             aria-label="Seleccione sucursal"
-                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled' : ''; ?>>
+                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled title="Opción deshabilitada"' : ''; ?>>
                             <!-- Opciones dinámicas -->
                         </select>
                     </div>
 
-                    <div class="filtro-empleado">
+                    <div class="filtro-empleado <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'bloqueado' : ''; ?>">
                         <label for="empleado_filtro">Empleado:</label>
                         <select
                             name="empleado_filtro"
                             class="form-select"
                             id="empleado_filtro"
                             aria-label="Seleccione empleado"
-                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled' : ''; ?>>
+                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled title="Opción deshabilitada"' : ''; ?>>
                             <!-- Opciones dinámicas -->
                         </select>
                     </div>
@@ -101,8 +107,9 @@ include "Views/Modules/sidebar.php";
                 </div>
 
                 <div id="cards-container">
-
+                    <!--  <div id="loader" class="loader"></div> -->
                 </div>
+
             </section>
         </div>
     </div>
@@ -129,7 +136,7 @@ include "Views/Modules/sidebar.php";
                         <div class="text">
                             <span>Click to upload image</span>
                         </div>
-                        <input type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.gif,.csv">
+                        <input type="file" id="file" name="file" accept=".webp,.jpg,.jpeg,.png,.csv,.xlsx,.xls,.pdf">
 
                     </label>
                 </div>
@@ -151,41 +158,49 @@ include "Views/Modules/sidebar.php";
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex align-items-start">
-                    <img id="imageModal" alt="Imagen del archivo" class="img-modal">
+                    <div id="previewContainer" class="previewContainer">
+                        <!-- Aquí se cargará dinámicamente la vista previa -->
+                    </div>
+
                     <div class="details">
-                        <div class="detail-row">
-                            <label>Nombre del archivo: </label>
-                            <p id="nombreArchivo"></p>
-                        </div>
-                        <div class="detail-row">
-                            <label>Tipo archivo: </label>
-                            <p id="tipoArchivo"></p>
-                        </div>
-                        <div class="detail-row">
-                            <label>Fecha de subida: </label>
-                            <p id="fechaSubida"></p>
-                        </div>
-                        <div class="detail-row">
-                            <label>Tamaño del archivo: </label>
-                            <p id="tamanoArchivo"></p>
-                        </div>
-                        <div class="detail-row">
-                            <label>DNI: </label>
-                            <p id="dniEmpleado"></p>
-                        </div>
-                        <div class="detail-row">
-                            <label>Empleado: </label>
-                            <p id="nombresEmpleado"></p>
-                        </div>
-                        <div class="detail-row">
-                            <label>Nombre de la sucursal: </label>
-                            <p id="nombreSucursal"></p>
-                        </div>
+                        <table class="table table-bordered tabla-detalles-archivo">
+                            <tbody>
+                                <tr>
+                                    <th>Nombre del archivo:</th>
+                                    <td id="nombreArchivo"></td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo archivo:</th>
+                                    <td id="tipoArchivo"></td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha de subida:</th>
+                                    <td id="fechaSubida"></td>
+                                </tr>
+                                <tr>
+                                    <th>Tamaño del archivo:</th>
+                                    <td id="tamanoArchivo"></td>
+                                </tr>
+                                <tr>
+                                    <th>DNI del empleado:</th>
+                                    <td id="dniEmpleado"></td>
+                                </tr>
+                                <tr>
+                                    <th>Empleado:</th>
+                                    <td id="nombresEmpleado"></td>
+                                </tr>
+                                <tr>
+                                    <th>Nombre de la sucursal:</th>
+                                    <td id="nombreSucursal"></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </main>
 
 <?php

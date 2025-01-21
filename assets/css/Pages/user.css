@@ -24,7 +24,7 @@
     --color-fondo: hsl(0, 0%, 100%);
     --color-table-body: hsl(0, 0%, 100%);
     --color-scrollbar: hsl(228, 36%, 44%);
-   /*  --color-second-child: hsla(223, 16%, 91%, 0.925); */
+    /*  --color-second-child: hsla(223, 16%, 91%, 0.925); */
     --color-texto-hover: hsl(228, 76%, 55%);
     --color-inactivo: hsl(0, 64%, 58%);
     --color-activo: hsl(142, 60%, 58%);
@@ -39,7 +39,7 @@
 }
 
 .tabla-vacia {
-    text-align: center; 
+    text-align: center;
     color: #777;
     font-size: 16px;
 }
@@ -47,21 +47,21 @@
 .table__body {
     width: 100%;
     height: 100%;
-    max-height: calc(100% - 100px); 
+    max-height: calc(100vh - 177px);
     background-color: var(--body-color);
     margin: 0 auto;
     overflow: auto;
     overflow: overlay;
     margin-top: 0.5%;
     padding-left: .8rem;
-/*     border: 1px solid red; */
+/*  border: 1px solid red; */
     /* Agregar sombra sutil para hacer el borde más notorio */
     /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.39); */
 }
 
 .table__body::-webkit-scrollbar {
-    width: 0.3rem;
-    height: 0.3rem;
+    width: 0.4rem;
+    height: 0.4rem;
 }
 
 .table__body::-webkit-scrollbar-thumb {
@@ -98,6 +98,7 @@ thead th {
     color: var(--color-texto-header);
     text-transform: capitalize;
     padding: 12px 12px;
+    z-index: 2;
 }
 
 thead th:hover {
@@ -128,51 +129,11 @@ tbody td {
     }
 }
 
-/* BUTTON */
-.acciones {
-    display: flex;
-    width: 90px;
-    background-color: transparent;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.btn-accion {
-    flex: 1;
-    background-color: transparent;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    border: none;
-    overflow: hidden;
-}
-
-.svgIcon-btn-editar {
-    margin-left: 5px;
-}
-
-.btn-accion:hover .svgIcon-spin {
-    animation: pulse 1s ease-in-out infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.2);
-    }
-}
-
 /* Estado de usuario */
 .estado-usuario {
     font-size: .9rem;
-    min-width: 90%;
-    width: 100%;
+    max-width: 70px;
+    width: 70px;
     display: inline-block;
     padding: 1px 3px;
     border-radius: .2rem;
@@ -193,4 +154,105 @@ tbody td {
 .estado-admin {
     background-color: var(--first-color);
     color: white;
+}
+
+/* BUTTON */
+.acciones {
+    display: flex;
+    width: 70px;
+    background-color: transparent;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    z-index: 1;
+}
+
+.texto-emergente:hover .svgIcon-spin {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.texto-emergente {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 33px;
+    height: 33px;
+    padding: 0;
+    border: 0px solid transparent;
+    border-radius: .4rem;
+    transition: all 0.2s linear;
+    position: relative;
+}
+
+.btn-editar {
+    background-color: rgb(210, 180, 30); 
+    color: #fff;
+}
+
+.btn-editar:hover {
+    background-color: rgb(180, 150, 20); 
+}
+
+.btn-deshabilitar {
+    background-color: rgb(255, 70, 70); 
+    color: #fff;
+}
+
+.btn-deshabilitar:hover {
+    background-color: rgb(220, 30, 30); 
+}
+
+.btn-habilitar {
+    background-color: rgb(80, 210, 80); 
+    color: #fff;
+}
+
+.btn-habilitar:hover {
+    background-color: rgb(60, 160, 60);
+}
+
+.texto-emergente .tooltiptext {
+    visibility: hidden;
+    width: auto;
+    background-color: rgba(0, 0, 0, 0.651);
+    color: #fff;
+    text-align: center;
+    border-radius: .4rem;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 3;
+}
+
+.texto-emergente .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.651) transparent transparent transparent;
+}
+
+.texto-emergente:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

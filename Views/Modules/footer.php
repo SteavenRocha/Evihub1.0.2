@@ -9,6 +9,7 @@
 <script>
     const BASE_URL = "<?php echo BASE_URL; ?>";
 </script>
+<script src="<?php echo BASE_URL; ?>assets/js/Pages/branch.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/Pages/user.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/Pages/employee.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/Pages/evidence.js"></script>

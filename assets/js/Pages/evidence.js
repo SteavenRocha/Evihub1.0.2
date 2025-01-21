@@ -25,7 +25,7 @@ if (currentPath.includes("/Evidence")) {
             if (idRol === 1) {
                 busquedaPorFiltro(e);
             } else if (idRol === 2 && idEmpleado !== null) {
-                busquedaFiltroEmpleado(idEmpleado); 
+                busquedaFiltroEmpleado(idEmpleado);
             }
         });
 
@@ -57,10 +57,18 @@ if (currentPath.includes("/Evidence")) {
         if (!file) return;
 
         // Validar el tipo de archivo
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'text/csv'];
+        const allowedTypes = [
+            'image/webp',
+            'image/jpeg',
+            'image/png',
+            'text/csv',
+            'application/vnd.ms-excel', // .xls
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+            'application/pdf'
+        ];
         if (!allowedTypes.includes(file.type)) {
-            notyf.error("Archivo no soportado. Solo se permiten imágenes (JPG, PNG, GIF) y CSV.");
-            e.target.value = ''; // Limpiar el campo de entrada de archivo
+            notyf.error("Archivo no soportado. Solo se permiten: WEBP, JPG, PNG, CSV, Excel (.xls, .xlsx) y PDF.");
+            e.target.value = '';
             return;
         }
 
@@ -105,21 +113,32 @@ if (currentPath.includes("/Evidence")) {
 
 function loadCards(data) {
     const container = document.getElementById('cards-container');
-    container.innerHTML = ''; // Limpiar el contenedor antes de agregar nuevos cards
+    container.innerHTML = '';
 
     if (data.length === 0) {
         // Mostrar mensaje si no hay archivos
         const noFilesMessage = document.createElement('p');
         noFilesMessage.textContent = "No existen archivos recientes.";
-        noFilesMessage.classList.add('no-files-message'); // Clase para personalizar el estilo si lo deseas
+        noFilesMessage.classList.add('no-files-message');
         container.appendChild(noFilesMessage);
     } else {
         data.forEach(file => {
-            // Usamos la función timeAgo para formatear la fecha
+
             const formattedDate = timeAgo(file.fecha_subida);
 
-            // Convertir el tamaño a KB
-            const sizeInKB = (file.size / 1024).toFixed(2); // Convertir a KB y redondear a 2 decimales
+            const sizeInKB = (file.size / 1024).toFixed(2);
+
+            const fileIcons = {
+                'image/jpeg': BASE_URL + 'assets/img/yape-logo.jpg',
+                'image/png': BASE_URL + 'assets/img/yape-logo.jpg',
+                'image/webp': BASE_URL + 'assets/img/yape-logo.jpg',
+                'application/pdf': BASE_URL + 'assets/img/pdf.png',
+                'text/csv': BASE_URL + 'assets/img/excel.png',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': BASE_URL + 'assets/img/excel.png',
+                'application/vnd.ms-excel': BASE_URL + 'assets/img/excel.png',
+            };
+
+            const filePreview = fileIcons[file.tipo_archivo] || BASE_URL + 'assets/img/yape-logo.jpg';
 
             const card = document.createElement('div');
             card.classList.add('card');
@@ -127,14 +146,14 @@ function loadCards(data) {
             card.innerHTML = `
                 <!-- Sección para la imagen -->
                 <div class="card-img">
-                  <img src="assets/img/yape-logo.jpg" alt="no hay imagen disponible">
+                    <img src="${filePreview}" alt="Vista previa del archivo">
                 </div>
 
                 <!-- Sección para el texto -->
                 <div class="card-text">
                   <div class="card-title" onclick="btnDetallesArchivo(${file.id_archivo});">${file.nombre_archivo}</div> <!-- Título del archivo -->
                   <p>${formattedDate}</p> <!-- Fecha de subida -->
-                  <p>${sizeInKB} KB</p> <!-- Peso de la imagen -->
+                  <p>${sizeInKB} KB</p> <!-- Peso del archivo -->
                 </div>
 
                 <!-- Sección para el icono -->
@@ -151,6 +170,50 @@ function loadCards(data) {
             container.appendChild(card);
         });
     }
+
+    const downloadZipBtn = document.getElementById('download-zip-btn');
+    if (downloadZipBtn) {
+
+        downloadZipBtn.replaceWith(downloadZipBtn.cloneNode(true));
+        const newDownloadZipBtn = document.getElementById('download-zip-btn');
+
+        newDownloadZipBtn.addEventListener('click', () => {
+            generarZip(data);
+        });
+    }
+}
+
+function generarZip(data) {
+
+    const url = BASE_URL + "Evidence/zip";
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        } else {
+            throw new Error('No se pudo generar el ZIP.');
+        }
+    })
+    .then(blob => {
+        // Crear un enlace temporal para descargar el archivo ZIP
+        const urlTemp = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = urlTemp;
+        a.download = 'archivos_seleccionados.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 function loadRecentFiles() {
@@ -414,7 +477,6 @@ function busquedaPorFiltro(e) {
 }
 
 function btnDetallesArchivo(id) {
-    /*     console.log(id); */
     $("#modalDetallesArchivo").modal("show");
 
     const url = BASE_URL + "Evidence/detalles/" + id;
@@ -427,14 +489,36 @@ function btnDetallesArchivo(id) {
             try {
                 if (response.length > 0) {
                     const data = response[0];
+                    const filePath = BASE_URL + `assets/${data.ruta}`;
 
-                    const imagePath = BASE_URL + `assets/${data.ruta}`;
-                    document.getElementById('imageModal').src = imagePath;
+                    // Mostrar contenido dinámico según el tipo de archivo
+                    const previewContainer = document.getElementById('previewContainer');
+                    previewContainer.innerHTML = '';
 
+                    if (data.tipo_archivo === 'application/pdf') {
+                        const iframe = document.createElement('iframe');
+                        iframe.src = filePath;
+                        previewContainer.appendChild(iframe);
+                    } else if (data.tipo_archivo.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = filePath;
+                        previewContainer.appendChild(img);
+                    } else {
+                        previewContainer.textContent = 'Vista previa no disponible para este tipo de archivo.';
+                    }
+
+                    // Mostrar otros detalles del archivo
                     $("#nombreArchivo").text(data.nombre_archivo);
-                    $("#tipoArchivo").text(data.tipo_archivo);
+
+                    // Cambiar 'tipo_archivo' a 'Aplicación Excel' si es Excel
+                    const tipoArchivo = data.tipo_archivo === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || data.tipo_archivo === 'application/vnd.ms-excel'
+                        ? 'aplication/excel'
+                        : data.tipo_archivo;
+
+                    $("#tipoArchivo").text(tipoArchivo);  // Mostrar el tipo de archivo modificado
+
                     $("#fechaSubida").text(data.fecha_subida);
-                    $("#tamanoArchivo").text(data.size);
+                    $("#tamanoArchivo").text(data.size + ' KB');
                     $("#dniEmpleado").text(data.dni);
                     $("#nombresEmpleado").text(data.nombre_completo);
                     $("#nombreSucursal").text(data.nombre_sucursal);
