@@ -19,8 +19,8 @@ class Evidence extends Controller
 
     public function listarRecent()
     {
-        $data['recent'] = $this->model->getRecentArchivos();
-        echo json_encode($data['recent'], JSON_UNESCAPED_UNICODE);
+        $data = $this->model->getRecentArchivos();
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
 
@@ -126,17 +126,33 @@ class Evidence extends Controller
         $empleado_filtro = !empty($_POST['empleado_filtro']) ? (int)$_POST['empleado_filtro'] : null;
         $desde = !empty($_POST['desde']) ? $_POST['desde'] : null;
         $hasta = !empty($_POST['hasta']) ? $_POST['hasta'] : ($desde ?? null);
-        $rol = $_SESSION['id_rol'];
-        /*  // Verifica que los datos no sean NULL o vacíos
-        if (is_null($sucursal_filtro) || is_null($empleado_filtro) || is_null($desde) || is_null($hasta)) {
-            // Puedes manejar el caso cuando faltan parámetros
-            echo json_encode(['error' => 'Faltan parámetros necesarios']);
-            return;
+    
+        // Si solo se ha enviado la fecha "desde", se asigna la misma fecha a "hasta" con hora 23:59:59
+        if (empty($_POST['hasta']) && !empty($_POST['desde'])) {
+            // Se asegura de que el formato de "hasta" esté al final del día
+            $hasta = date('Y-m-d 23:59:59', strtotime($desde));
         }
-        */
+    
+        $rol = $_SESSION['id_rol'];
+    
+        // Verifica si las fechas están vacías antes de intentar formatearlas
+        if (!empty($desde)) {
+            $fecha_desde = new DateTime($desde);
+            $fechaFormateadaDesde = $fecha_desde->format('Y-m-d H:i:s');
+        } else {
+            $fechaFormateadaDesde = null;
+        }
+    
+        if (!empty($hasta)) {
+            $fecha_hasta = new DateTime($hasta);
+            $fechaFormateadaHasta = $fecha_hasta->format('Y-m-d H:i:s');
+        } else {
+            $fechaFormateadaHasta = null;
+        }
+    
         // Llama a la función para obtener los resultados
-        $data['filtro'] = $this->model->filtrarArchivo($sucursal_filtro, $empleado_filtro, $desde, $hasta, $rol);
-
+        $data['filtro'] = $this->model->filtrarArchivo($sucursal_filtro, $empleado_filtro, $fechaFormateadaDesde, $fechaFormateadaHasta, $rol);
+    
         if ($data['filtro'] == "datos vacios") {
             echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
             die();
@@ -144,9 +160,10 @@ class Evidence extends Controller
             echo json_encode(['error' => 'No se aplicaron fechas'], JSON_UNESCAPED_UNICODE);
             die();
         }
+        
         echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
         die();
-    }
+    }    
 
     public function filtrarEmpleado(int $id)
     {
@@ -154,6 +171,16 @@ class Evidence extends Controller
         $empleado_filtro = !empty($_POST['empleado_filtro']) ? (int)$_POST['empleado_filtro'] : null; */
         $desde = !empty($_POST['desde']) ? $_POST['desde'] : null;
         $hasta = !empty($_POST['hasta']) ? $_POST['hasta'] : ($desde ?? null);
+        if (empty($_POST['hasta']) && !empty($_POST['desde'])) {
+            // Se asegura de que el formato de "hasta" esté al final del día
+            $hasta = date('Y-m-d 23:59:59', strtotime($desde));
+        }
+        
+        $fecha_desde = new DateTime($desde);
+        $fechaFormateadaDesde = $fecha_desde->format('Y-m-d H:i:s');
+
+        $fecha_hasta = new DateTime($hasta);
+        $fechaFormateadaHasta = $fecha_hasta->format('Y-m-d H:i:s');
         /*  // Verifica que los datos no sean NULL o vacíos
         if (is_null($sucursal_filtro) || is_null($empleado_filtro) || is_null($desde) || is_null($hasta)) {
             // Puedes manejar el caso cuando faltan parámetros
@@ -162,7 +189,7 @@ class Evidence extends Controller
         }
         */
         // Llama a la función para obtener los resultados
-        $data['filtro'] = $this->model->filtrarArchivoEmpleado($desde, $hasta, $id);
+        $data['filtro'] = $this->model->filtrarArchivoEmpleado($fechaFormateadaDesde, $fechaFormateadaHasta, $id);
 
         if ($data['filtro'] == "datos vacios") {
             echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
@@ -213,6 +240,9 @@ class Evidence extends Controller
             // Definir la base de la ruta del sistema
             $baseFilePath = $_SERVER['DOCUMENT_ROOT'] . '/EviHub1.0.2/assets/';
 
+            // Mantener un registro de nombres únicos
+            $addedFiles = [];
+
             // Agregar los archivos al ZIP
             foreach ($data as $file) {
                 if (isset($file['ruta'])) {
@@ -221,8 +251,22 @@ class Evidence extends Controller
 
                     // Verificar si el archivo existe
                     if (file_exists($filePath)) {
-                        // Agregar el archivo al ZIP usando el nombre original
-                        $zip->addFile($filePath, basename($filePath));
+                        // Obtener el nombre base del archivo
+                        $baseName = basename($filePath);
+
+                        // Si el archivo ya existe en el ZIP, agregar un sufijo único
+                        $uniqueName = $baseName;
+                        $counter = 1;
+                        while (in_array($uniqueName, $addedFiles)) {
+                            $uniqueName = pathinfo($baseName, PATHINFO_FILENAME) . "($counter)." . pathinfo($baseName, PATHINFO_EXTENSION);
+                            $counter++;
+                        }
+
+                        // Registrar el archivo con el nombre único
+                        $addedFiles[] = $uniqueName;
+
+                        // Agregar el archivo al ZIP con el nombre único
+                        $zip->addFile($filePath, $uniqueName);
                     } else {
                         // Registrar un error si el archivo no existe
                         error_log("El archivo no existe: " . $filePath);
@@ -254,7 +298,7 @@ class Evidence extends Controller
         }
     }
 
-/*     public function zip()
+    /*     public function zip()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Leer datos enviados desde el frontend

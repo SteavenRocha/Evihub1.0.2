@@ -9,12 +9,6 @@ include "Views/Modules/sidebar.php";
     <div class="contenido" id="main">
         <div class="cuerpo-tabla">
             <section class="table__header">
-                
-                <button id="download-zip-btn"
-                    type="button"
-                    class="button-zip">
-                    Descargar ZIP
-                </button>
 
                 <div class="form-titulo">
                     <span>Archivos</span>
@@ -69,12 +63,12 @@ include "Views/Modules/sidebar.php";
 
                     <div class="fecha-desde">
                         <label for="desde">Desde:</label>
-                        <input type="date" id="desde" name="desde">
+                        <input type="datetime-local" id="desde" name="desde">
                     </div>
 
                     <div class="fecha-hasta">
                         <label for="hasta">Hasta:</label>
-                        <input type="date" id="hasta" name="hasta">
+                        <input type="datetime-local" id="hasta" name="hasta">
                     </div>
 
                     <div class="contenedor-btn-filter">
@@ -89,19 +83,24 @@ include "Views/Modules/sidebar.php";
                                 <path d="M15.825.14a.5.5 0 0 1 .034.705l-9.01 9.89c-.288.318-.352.75-.293 1.132.057.377.213.784.465 1.036a2.5 2.5 0 1 1-3.536 0c.252-.252.659-.408 1.036-.465.382-.059.814.005 1.132.293l9.89-9.01a.5.5 0 0 1 .705.034z" />
                             </svg>
                         </button>
+
+                        <button type="button" class="descargar-btn" id="download-zip-btn" title="Descargar archivos">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z" />
+                                <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z" />
+                            </svg>
+                        </button>
                     </div>
 
                 </form>
 
                 <div class="sub-titulo">
                     <p class="filtro-subtitulo" id="filtro-subtitulo">
-                        <?php
-                        if ($_SESSION['id_rol'] == 1) {
-                            echo "Se muestran: Últimos archivos subidos";
-                        } else {
-                            echo "Se muestran archivos subidos por: " . (isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : 'Usuario');
-                        }
-                        ?>
+                        <?php if ($_SESSION['id_rol'] == 1): ?>
+                            Se muestran: <span id="cantidad-archivos"></span> archivo(s)
+                        <?php else: ?>
+                            Se muestran: <span id="cantidad-archivos"></span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>
+                        <?php endif; ?>
                     </p>
                     <p class="filtros-aplicados" id="filtros-aplicados"></p>
                 </div>

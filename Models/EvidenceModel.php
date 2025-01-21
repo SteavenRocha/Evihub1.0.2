@@ -9,7 +9,7 @@ class EvidenceModel extends Query
 
     public function getRecentArchivos()
     {
-        $sql = "SELECT 
+        $sqlRecent = "SELECT 
                     id_archivo,
                     nombre_archivo,
                     tipo_archivo,
@@ -17,14 +17,27 @@ class EvidenceModel extends Query
                     ruta,
                     size
                 FROM 
-                    ARCHIVO a
+                    ARCHIVO
                 WHERE 
                     estado_archivo = 1
                 ORDER BY 
                     fecha_subida DESC
                 LIMIT 50";
-        $data['users'] = $this->selectAll($sql);
-        return $data['users'];
+
+        $sqlCount = "SELECT 
+                    COUNT(*) AS total_archivos
+                FROM 
+                    ARCHIVO
+                WHERE 
+                    estado_archivo = 1";
+
+        $recentFiles = $this->selectAll($sqlRecent);
+        $totalFiles = $this->select($sqlCount);
+
+        return [
+            'archivos' => $recentFiles,
+            'total_archivos' => $totalFiles['total_archivos'],
+        ];
     }
 
     public function getRecentArchivosEmpleado(?int $id_empleado)
@@ -35,7 +48,8 @@ class EvidenceModel extends Query
                     a.tipo_archivo,
                     a.fecha_subida,
                     a.ruta,
-                    a.size
+                    a.size,
+                    CONCAT(e.nombres, ' ', e.ape_paterno, ' ', e.ape_materno) AS nombre_completo
                 FROM 
                     ARCHIVO a
                 JOIN 
@@ -49,8 +63,25 @@ class EvidenceModel extends Query
                 ORDER BY 
                     fecha_subida DESC
                 LIMIT 50";
-        $data['archivos'] = $this->selectAll($sql);
-        return $data['archivos'];
+
+        $sqlCount = "SELECT 
+                    COUNT(*) AS total_archivos
+                FROM 
+                    ARCHIVO a
+                JOIN 
+                    USUARIO u ON a.id_usuario = u.id_usuario
+                WHERE 
+                    a.estado_archivo = 1
+                AND
+                    u.id_empleado = $id_empleado";
+
+        $recentFiles = $this->selectAll($sql);
+        $totalFiles = $this->select($sqlCount);
+
+        return [
+            'archivos' => $recentFiles,
+            'total_archivos' => $totalFiles['total_archivos'],
+        ];
     }
 
     public function uploadFile(int $id_usuario, int $id_sucursal, string $name, string $tipo, string $size, string $filePathRelative)
@@ -121,14 +152,13 @@ class EvidenceModel extends Query
 
         $filtrosAplicados = [];
 
-        // Validación por rol
-        if ($rol === 2) { // Si el rol es 2, solo permite buscar por fechas
+        if ($rol === 2) { 
             if (empty($desde) || empty($hasta)) {
                 return "Debe especificar las fechas.";
             }
-            $sql .= " AND DATE(a.fecha_subida) BETWEEN '$desde' AND '$hasta'";
+            $sql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
             $filtrosAplicados[] = "Desde $desde hasta $hasta";
-        } else if ($rol === 1) { // Si el rol es 1, permite todos los filtros
+        } else if ($rol === 1) { 
             if (!empty($sucursal_filtro)) {
                 $sql .= " AND s.id_sucursal = $sucursal_filtro";
                 $filtrosAplicados[] = "Sucursal: $sucursal_filtro";
@@ -140,19 +170,44 @@ class EvidenceModel extends Query
             }
 
             if (!empty($desde) && !empty($hasta)) {
-                $sql .= " AND DATE(a.fecha_subida) BETWEEN '$desde' AND '$hasta'";
+                $sql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
                 $filtrosAplicados[] = "Desde $desde hasta $hasta";
             }
         } else {
             return "Rol no válido.";
         }
 
-        // Si no hay filtros aplicados y el rol es 1, devuelve mensaje de datos vacíos
         if ($rol === 1 && empty($sucursal_filtro) && empty($empleado_filtro) && empty($desde) && empty($hasta)) {
             return "Datos vacíos";
         }
 
-        $data['filtro'] = $this->selectAll($sql);
+        $sql .= " ORDER BY a.fecha_subida DESC";
+
+        $data['archivos'] = $this->selectAll($sql);
+
+        $countSql = "SELECT COUNT(*) AS total_archivos FROM ARCHIVO a
+                 JOIN SUCURSAL s ON a.id_sucursal = s.id_sucursal
+                 JOIN USUARIO u ON a.id_usuario = u.id_usuario
+                 JOIN EMPLEADO e ON u.id_empleado = e.id_empleado
+                 WHERE 1=1";
+
+        if ($rol === 2) {
+            if (!empty($desde) && !empty($hasta)) {
+                $countSql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
+            }
+        } else if ($rol === 1) {
+            if (!empty($sucursal_filtro)) {
+                $countSql .= " AND s.id_sucursal = $sucursal_filtro";
+            }
+            if (!empty($empleado_filtro)) {
+                $countSql .= " AND e.id_empleado = $empleado_filtro";
+            }
+            if (!empty($desde) && !empty($hasta)) {
+                $countSql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
+            }
+        }
+
+        $data['total_archivos'] = $this->select($countSql)['total_archivos'];
         $data['filtros_aplicados'] = $filtrosAplicados;
 
         return $data;
@@ -188,7 +243,7 @@ class EvidenceModel extends Query
         $filtrosAplicados = [];
 
         if (!empty($desde) && !empty($hasta)) {
-            $sql .= " AND DATE(a.fecha_subida) BETWEEN '$desde' AND '$hasta'";
+            $sql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
             $filtrosAplicados[] = "Desde $desde hasta $hasta";
         }
 
@@ -196,7 +251,23 @@ class EvidenceModel extends Query
             return "Datos vacíos";
         }
 
+        $sql .= " ORDER BY a.fecha_subida DESC";
+
         $data['filtro'] = $this->selectAll($sql);
+
+        // Agregar la consulta de conteo de archivos
+        $countSql = "SELECT COUNT(*) AS total_archivos FROM ARCHIVO a
+                 JOIN SUCURSAL s ON a.id_sucursal = s.id_sucursal
+                 JOIN USUARIO u ON a.id_usuario = u.id_usuario
+                 JOIN EMPLEADO e ON u.id_empleado = e.id_empleado
+                 WHERE u.id_empleado = $id";
+
+        if (!empty($desde) && !empty($hasta)) {
+            $countSql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
+        }
+
+        // Obtener el número de archivos que cumplen las condiciones
+        $data['total_archivos'] = $this->select($countSql)['total_archivos'];
         $data['filtros_aplicados'] = $filtrosAplicados;
 
         return $data;

@@ -263,10 +263,10 @@
 /* FILTROS DE BUSQUEDA */
 .filtros {
   display: grid;
-  grid-template-columns: 1fr 1fr 130px 130px 90px;
+  grid-template-columns: 0.8fr 1fr 160px 160px 125px;
   column-gap: 15px;
   padding-left: 1.5rem;
-  padding-right: 1.4rem;
+  padding-right: 1.3rem;
   padding-bottom: 1rem;
   background-color: var(--body-color);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08);
@@ -304,7 +304,7 @@ label {
 }
 
 .form-select,
-input[type="date"] {
+input[type="datetime-local"] {
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -314,17 +314,17 @@ input[type="date"] {
   width: 100%;
 }
 
-input[type="date"] {
+input[type="datetime-local"] {
   width: 100%;
 }
 
 .form-select:hover,
-input[type="date"]:hover {
+input[type="datetime-local"]:hover {
   border-color: #007bff;
 }
 
 .form-select:focus,
-input[type="date"]:focus {
+input[type="datetime-local"]:focus {
   border-color: #113a66;
   outline: none;
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
@@ -413,9 +413,10 @@ input[type="date"]:focus {
 
 /* Botón */
 .contenedor-btn-filter {
-  margin-top: 30%;
+  margin-top: 22%;
+/*   margin-left: 3%; */
   height: 40px;
-  width: 90px;
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -457,6 +458,26 @@ input[type="date"]:focus {
   border-radius: 10px;
   cursor: pointer;
   border: none;
+}
+
+.descargar-btn {
+  width: 40px;
+  height: 40px;
+
+  background-color: var(--first-color);
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+}
+
+.descargar-btn svg {
+  color: white;
+  width: 20px;
+  height: 20px;
+}
+
+.descargar-btn:hover {
+  background-color: var(--first-color-dark);
 }
 
 .bar {
@@ -514,6 +535,7 @@ input[type="date"]:focus {
 
   .contenedor-btn-filter {
     grid-column: 2;
+    margin-left: 0;
     margin-top: 28px;
   }
 }
@@ -641,4 +663,40 @@ input[type="date"]:focus {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* CANTIDAD DE ARCHIVOS*/
+#cantidad-archivos {
+  background-color: hsl(228, 86%, 60%);
+  color: white;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+#empleado-archivos {
+  background-color: hsl(228, 86%, 60%);
+  color: white;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.table__body__card::-webkit-scrollbar {
+  width: 0.4rem;
+  height: 0.4rem;
+}
+
+.table__body__card::-webkit-scrollbar-thumb {
+  border-radius: .5rem;
+  background-color: gray;
+  visibility: hidden;
+}
+
+.table__body__card:hover::-webkit-scrollbar-thumb {
+  visibility: visible;
 }

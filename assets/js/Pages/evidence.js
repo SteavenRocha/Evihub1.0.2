@@ -92,8 +92,10 @@ if (currentPath.includes("/Evidence")) {
                         e.target.value = '';
                         notyf.success("Archivo subido con éxito");
                         if (idRol === 1) {
+                            btnLimpiarFiltro();
                             loadRecentFiles();
                         } else if (idRol === 2) {
+                            btnLimpiarFiltroEmpleado();
                             loadRecentFilesEmpleado(idEmpleado);
                         }
                         cerrarModalUpload();
@@ -109,6 +111,27 @@ if (currentPath.includes("/Evidence")) {
             }
         });
     });
+
+    document.getElementById('desde').addEventListener('focus', function () {
+        const datetimeInput = document.getElementById('desde');
+        if (!datetimeInput.value) {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const localDate = now.toLocaleString('sv-SE');
+            datetimeInput.value = localDate;
+        }
+    });
+
+    document.getElementById('hasta').addEventListener('focus', function () {
+        const datetimeInput = document.getElementById('hasta');
+        if (!datetimeInput.value) {
+            const now = new Date();
+            now.setHours(23, 59, 0, 0);
+            const localDate = now.toLocaleString('sv-SE');
+            datetimeInput.value = localDate;
+        }
+    });
+
 }
 
 function loadCards(data) {
@@ -185,34 +208,52 @@ function loadCards(data) {
 
 function generarZip(data) {
 
-    const url = BASE_URL + "Evidence/zip";
+    const cantidadArchivos = data.length;
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.blob();
-        } else {
-            throw new Error('No se pudo generar el ZIP.');
+    Swal.fire({
+        title: `¿Estás seguro de querer descargar ${cantidadArchivos} archivo(s)?`,
+        text: "Se descargara un archivo .zip",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si",
+        cancelButtonText: "Cancelar"
+
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            const url = BASE_URL + "Evidence/zip";
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        throw new Error('No se pudo generar el ZIP.');
+                    }
+                })
+                .then(blob => {
+                    // Crear un enlace temporal para descargar el archivo ZIP
+                    const urlTemp = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = urlTemp;
+                    a.download = 'archivos_seleccionados.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-    })
-    .then(blob => {
-        // Crear un enlace temporal para descargar el archivo ZIP
-        const urlTemp = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = urlTemp;
-        a.download = 'archivos_seleccionados.zip';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-    })
-    .catch(error => {
-        console.error('Error:', error);
     });
 }
 
@@ -222,7 +263,15 @@ function loadRecentFiles() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            loadCards(data);
+
+            loadCards(data.archivos);
+
+            const cantidadElement = document.getElementById('cantidad-archivos');
+
+            if (cantidadElement) {
+                const cantidadAMostrar = Math.min(data.total_archivos || 0, 50);
+                cantidadElement.textContent = cantidadAMostrar;
+            }
         })
         .catch(error => console.error('Error al cargar los archivos:', error));
 }
@@ -233,7 +282,22 @@ function loadRecentFilesEmpleado(idEmpleado) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            loadCards(data);
+            loadCards(data.archivos);
+
+            const cantidadElement = document.getElementById('cantidad-archivos');
+            const empleadoElement = document.getElementById('empleado-archivos');
+
+            if (cantidadElement && empleadoElement) {
+                const cantidadAMostrar = Math.min(data.total_archivos || 0, 50);
+                cantidadElement.textContent = cantidadAMostrar;
+
+                if (data.archivos && data.archivos.length > 0) {
+                    const empleadoNombre = data.archivos[0].nombre_completo;
+                    empleadoElement.textContent = empleadoNombre;
+                } else {
+                    empleadoElement.textContent = 'No hay archivos disponibles';
+                }
+            }
         })
         .catch(error => console.error('Error al cargar los archivos:', error));
 }
@@ -366,8 +430,9 @@ function busquedaFiltroEmpleado(idEmpleado) {
                     notyf.error('Ingrese al menos un filtro.');
                 }
                 else if (data.filtro && data.filtro.length > 0) {
-
-                    subtituloDiv.text("Filtros buscados: ");
+                    /* console.log(data); */
+                    // Actualiza el subtitulo con la cantidad de archivos
+                    subtituloDiv.html(`Se muestran: <span id="cantidad-archivos">${data.total_archivos}</span> archivo(s) - Subido(s) por: <span id="empleado-archivos">${data.filtro[0].nombre_completo}</span> - Filtros aplicados:`);
 
                     let filtrosAplicadosTexto = "";
                     data.filtros_aplicados.forEach((filtro, index) => {
@@ -385,8 +450,8 @@ function busquedaFiltroEmpleado(idEmpleado) {
                 }
                 else {
                     notyf.error('No se encontraron resultados para los filtros aplicados.');
-                    subtituloDiv.text("Se muestran: Ultimos archivos subidos");
-                    filtrosParrafo.html("");
+                    /*  subtituloDiv.text("Se muestran: Ultimos archivos subidos"); */
+                    /*  filtrosParrafo.html(""); */
 
                     loadRecentFilesEmpleado(idEmpleado);
                     btnLimpiarFiltroEmpleado();
@@ -416,30 +481,29 @@ function busquedaPorFiltro(e) {
         success: function (response) {
             try {
                 const data = JSON.parse(response);
-
+                /* console.log(data); */
                 const filtrosParrafo = $("#filtros-aplicados");
                 const subtituloDiv = $("#filtro-subtitulo");
 
                 if (data.error === "No se aplicaron filtros") {
                     notyf.error('Ingrese al menos un filtro.');
                 }
-                else if (data.filtro && data.filtro.length > 0) {
+                else if (data.archivos && data.archivos.length > 0) {
 
                     if (idRol === 1) {
-
-
-                        subtituloDiv.text("Filtros buscados: ");
+                        // Actualiza el subtitulo con la cantidad de archivos
+                        subtituloDiv.html(`Se muestran: <span id="cantidad-archivos">${data.total_archivos}</span> archivo(s) - Filtros aplicados:`);
 
                         let filtrosAplicadosTexto = "";
-                        data.filtros_aplicados.forEach((filtro, index) => {
-                            if (filtro.includes("Sucursal:")) {
-                                const nombreSucursal = data.filtro[0].nombre_sucursal;
+                        data.filtros_aplicados.forEach((archivos, index) => {
+                            if (archivos.includes("Sucursal:")) {
+                                const nombreSucursal = data.archivos[0].nombre_sucursal;
                                 filtrosAplicadosTexto += `<span>${nombreSucursal}</span>`;
-                            } else if (filtro.includes("Empleado:")) {
-                                const nombreEmpleado = data.filtro[0].nombre_completo;
+                            } else if (archivos.includes("Empleado:")) {
+                                const nombreEmpleado = data.archivos[0].nombre_completo;
                                 filtrosAplicadosTexto += `<span>${nombreEmpleado}</span>`;
                             } else {
-                                filtrosAplicadosTexto += `<span>${filtro}</span>`;
+                                filtrosAplicadosTexto += `<span>${archivos}</span>`;
                             }
 
                             if (index < data.filtros_aplicados.length - 1) {
@@ -448,15 +512,15 @@ function busquedaPorFiltro(e) {
                         });
                         filtrosParrafo.html(filtrosAplicadosTexto);
                         notyf.success('Archivos encontrados');
-                        loadCards(data.filtro);
+                        loadCards(data.archivos);
                     } else if (idRol === 2) {
                         busquedaFiltroEmpleado(idEmpleado);
                     }
                 }
                 else {
                     notyf.error('No se encontraron resultados para los filtros aplicados.');
-                    subtituloDiv.text("Se muestran: Ultimos archivos subidos");
-                    filtrosParrafo.html("");
+                    /*  subtituloDiv.html('Se muestran: <span id="cantidad-archivos">0</span> archivo(s)');
+                     filtrosParrafo.html(""); */
                     if (idRol === 1) {
                         loadRecentFiles();
                     } else if (idRol === 2) {
@@ -540,9 +604,7 @@ function btnLimpiarFiltro() {
     const subtituloDiv = $("#filtro-subtitulo");
 
     // Reset the filter subtitle
-    subtituloDiv.text("Se muestran:  Ultimos archivos subidos");
-
-    // Clear any applied filters text
+    subtituloDiv.html('Se muestran: <span id="cantidad-archivos">0</span> archivo(s)');
     filtrosParrafo.html("");
 
     // Reset the filter form fields (for Select2)
@@ -564,10 +626,7 @@ function btnLimpiarFiltroEmpleado() {
     const filtrosParrafo = $("#filtros-aplicados");
     const subtituloDiv = $("#filtro-subtitulo");
 
-    // Reset the filter subtitle
-    subtituloDiv.text("Se muestran archivos subidos por: " + nombreCompletoUsuario);
-
-    // Clear any applied filters text
+    subtituloDiv.html(`Se muestran: <span id="cantidad-archivos"></span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>`);
     filtrosParrafo.html("");
 
     // Reset the filter form fields (for Select2)
