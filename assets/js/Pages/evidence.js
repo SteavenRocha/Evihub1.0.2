@@ -31,11 +31,11 @@ if (currentPath.includes("/Evidence")) {
 
         if (idRol === 1) {
             $("#limpiar-btn").click(function () {
-                btnLimpiarFiltro();
+                btnLimpiarFiltroYtitulo();
             });
         } else if (idRol === 2) {
             $("#limpiar-btn").click(function () {
-                btnLimpiarFiltroEmpleado();
+                btnLimpiarTituloYfiltroEmpleado();
             });
         }
 
@@ -93,9 +93,11 @@ if (currentPath.includes("/Evidence")) {
                         notyf.success("Archivo subido con éxito");
                         if (idRol === 1) {
                             btnLimpiarFiltro();
+                            btnLimpiarTitulo();
                             loadRecentFiles();
                         } else if (idRol === 2) {
                             btnLimpiarFiltroEmpleado();
+                            btnLimpiarTituloEmpleado();
                             loadRecentFilesEmpleado(idEmpleado);
                         }
                         cerrarModalUpload();
@@ -140,7 +142,7 @@ function loadCards(data) {
 
     const container = document.getElementById('cards-container');
     container.innerHTML = '';
-    
+
     const loader = document.getElementById('loader');
     loader.style.display = 'block';
 
@@ -148,7 +150,7 @@ function loadCards(data) {
         if (data.length === 0) {
             // Mostrar mensaje si no hay archivos
             const noFilesMessage = document.createElement('p');
-            noFilesMessage.textContent = "No existen archivos recientes.";
+            noFilesMessage.textContent = "No existen archivos.";
             noFilesMessage.classList.add('no-files-message');
             container.appendChild(noFilesMessage);
         } else {
@@ -205,10 +207,10 @@ function loadCards(data) {
 
         const downloadZipBtn = document.getElementById('download-zip-btn');
         if (downloadZipBtn) {
-    
+
             downloadZipBtn.replaceWith(downloadZipBtn.cloneNode(true));
             const newDownloadZipBtn = document.getElementById('download-zip-btn');
-    
+
             newDownloadZipBtn.addEventListener('click', () => {
                 generarZip(data);
             });
@@ -221,53 +223,56 @@ function generarZip(data) {
 
     const cantidadArchivos = data.length;
 
-    // console.log(data);
+    if (cantidadArchivos == 0) {
+        notyf.error('No existen archivos');
+    } else {
+        // console.log(data);
+        Swal.fire({
+            title: `¿Estás seguro de querer descargar ${cantidadArchivos} archivo(s)?`,
+            text: "Se descargara un archivo .zip",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si",
+            cancelButtonText: "Cancelar"
 
-    Swal.fire({
-        title: `¿Estás seguro de querer descargar ${cantidadArchivos} archivo(s)?`,
-        text: "Se descargara un archivo .zip",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si",
-        cancelButtonText: "Cancelar"
+        }).then((result) => {
 
-    }).then((result) => {
+            if (result.isConfirmed) {
 
-        if (result.isConfirmed) {
+                const url = BASE_URL + "Evidence/zip";
 
-            const url = BASE_URL + "Evidence/zip";
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.blob();
-                    } else {
-                        throw new Error('No se pudo generar el ZIP.');
-                    }
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
                 })
-                .then(blob => {
-                    // Crear un enlace temporal para descargar el archivo ZIP
-                    const urlTemp = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = urlTemp;
-                    a.download = 'archivos_seleccionados.zip';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-    });
+                    .then(response => {
+                        if (response.ok) {
+                            return response.blob();
+                        } else {
+                            throw new Error('No se pudo generar el ZIP.');
+                        }
+                    })
+                    .then(blob => {
+                        // Crear un enlace temporal para descargar el archivo ZIP
+                        const urlTemp = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = urlTemp;
+                        a.download = 'archivos_seleccionados.zip';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    }
 }
 
 function loadRecentFiles() {
@@ -308,7 +313,7 @@ function loadRecentFilesEmpleado(idEmpleado) {
                     const empleadoNombre = data.archivos[0].nombre_completo;
                     empleadoElement.textContent = empleadoNombre;
                 } else {
-                    empleadoElement.textContent = 'No hay archivos disponibles';
+                    empleadoElement.textContent = nombreCompletoUsuario;
                 }
             }
         })
@@ -425,6 +430,20 @@ function listarEmpleados(sucursales, sucursalSeleccionada = null) {
 }
 
 function busquedaFiltroEmpleado(idEmpleado) {
+
+    const desde = document.getElementById('desde');
+    const hasta = document.getElementById('hasta');
+
+    if (!desde.value && hasta.value) {
+        notyf.error('Debe completar una fecha "Desde"');
+        return;
+    }
+
+    if (new Date(desde.value) > new Date(hasta.value)) {
+        notyf.error('La fecha "Desde" no puede ser mayor que la fecha "Hasta".');
+        return;
+    }
+    
     const url = BASE_URL + "Evidence/filtrarEmpleado/" + idEmpleado;
     const frm = $("#filtros");
 
@@ -483,6 +502,19 @@ function busquedaFiltroEmpleado(idEmpleado) {
 
 function busquedaPorFiltro(e) {
     e.preventDefault();
+
+    const desde = document.getElementById('desde');
+    const hasta = document.getElementById('hasta');
+
+    if (!desde.value && hasta.value) {
+        notyf.error('Debe completar una fecha "Desde"');
+        return;
+    }
+
+    if (new Date(desde.value) > new Date(hasta.value)) {
+        notyf.error('La fecha "Desde" no puede ser mayor que la fecha "Hasta".');
+        return;
+    }
 
     const url = BASE_URL + "Evidence/filtrar";
     const frm = $("#filtros");
@@ -613,47 +645,58 @@ function btnDetallesArchivo(id) {
     });
 }
 
-function btnLimpiarFiltro() {
+function btnLimpiarFiltroYtitulo() {
     const filtrosParrafo = $("#filtros-aplicados");
     const subtituloDiv = $("#filtro-subtitulo");
 
-    // Reset the filter subtitle
     subtituloDiv.html('Se muestran: <span id="cantidad-archivos">0</span> archivo(s)');
     filtrosParrafo.html("");
 
-    // Reset the filter form fields (for Select2)
-    $("#sucursal_filtro").val(null).trigger('change'); // Reset the sucursal filter
-    $("#empleado_filtro").val(null).trigger('change'); // Reset the empleado filter
-    $("#desde").val(""); // Clear the 'desde' date
-    $("#hasta").val(""); // Clear the 'hasta' date
+    $("#sucursal_filtro").val(null).trigger('change');
+    $("#empleado_filtro").val(null).trigger('change');
+    $("#desde").val("");
+    $("#hasta").val("");
 
-    // Load the most recent files (assuming this function populates the files)
-    if (idRol === 1) {
-        loadRecentFiles();
-        listarFiltros();
-    } else if (idRol === 2) {
-        loadRecentFilesEmpleado(idEmpleado);
-    }
+    loadRecentFiles();
 }
 
-function btnLimpiarFiltroEmpleado() {
+function btnLimpiarTituloYfiltroEmpleado() {
     const filtrosParrafo = $("#filtros-aplicados");
     const subtituloDiv = $("#filtro-subtitulo");
 
     subtituloDiv.html(`Se muestran: <span id="cantidad-archivos"></span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>`);
     filtrosParrafo.html("");
 
-    // Reset the filter form fields (for Select2)
-    $("#sucursal_filtro").val(null).trigger('change'); // Reset the sucursal filter
-    $("#empleado_filtro").val(null).trigger('change'); // Reset the empleado filter
-    $("#desde").val(""); // Clear the 'desde' date
-    $("#hasta").val(""); // Clear the 'hasta' date
+    $("#desde").val("");
+    $("#hasta").val("");
 
-    // Load the most recent files (assuming this function populates the files)
-    if (idRol === 1) {
-        loadRecentFiles();
-        listarFiltros();
-    } else if (idRol === 2) {
-        loadRecentFilesEmpleado(idEmpleado);
-    }
+    loadRecentFilesEmpleado(idEmpleado);
 }
+
+function btnLimpiarFiltro() {
+    $("#sucursal_filtro").val(null).trigger('change');
+    $("#empleado_filtro").val(null).trigger('change');
+    $("#desde").val("");
+    $("#hasta").val("");
+}
+
+function btnLimpiarFiltroEmpleado() {
+    $("#desde").val("");
+    $("#hasta").val("");
+}
+
+function btnLimpiarTitulo() {
+    const filtrosParrafo = $("#filtros-aplicados");
+    const subtituloDiv = $("#filtro-subtitulo");
+
+    subtituloDiv.html(`Se muestran: <span id="cantidad-archivos"></span> archivo(s)`);
+    filtrosParrafo.html("");
+};
+
+function btnLimpiarTituloEmpleado() {
+    const filtrosParrafo = $("#filtros-aplicados");
+    const subtituloDiv = $("#filtro-subtitulo");
+
+    subtituloDiv.html(`Se muestran: <span id="cantidad-archivos"></span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>`);
+    filtrosParrafo.html("");
+};

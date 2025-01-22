@@ -1,11 +1,31 @@
+.cuerpo-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
 .body-form {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-
     background-color: var(--body-color);
+}
+
+.footer {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #888;
+}
+
+.footer a {
+    color: var(--first-color);
 }
 
 .modern-form {
