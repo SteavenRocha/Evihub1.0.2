@@ -88,7 +88,7 @@ if (currentPathEmployee.includes("/Employee")) {
     document.getElementById('filtroEmpleados').addEventListener('input', function () {
         const filtro = this.value.toLowerCase();
         const filas = document.querySelectorAll('#tableEmployees tr');
-    
+
         filas.forEach(fila => {
             const textoFila = fila.textContent.toLowerCase();
             if (textoFila.includes(filtro)) {
@@ -293,7 +293,8 @@ function registrarEmpleado(e) {
     ];
 
     const isValid = campos.every(campo => campo.classList.contains("is-valid"));
-
+    const dniInput = document.getElementById("dni");
+    const feedbackDni = document.getElementById("feedbackDNI");
     if (isValid) {
         const url = BASE_URL + "Employee/registrar";
         const frm = $("#frmEmpleado");
@@ -313,7 +314,11 @@ function registrarEmpleado(e) {
                     } else if (res == "invalido") {
                         notyf.error('Formato de nombre inválido');
                     } else if (res == "existe") {
-                        notyf.error('Empleado ya existe');
+                        /*  notyf.error('Empleado ya existe'); */
+                        feedbackDni.textContent = "Empleado ya existe";
+                        dniInput.classList.add("is-invalid");
+                        dniInput.classList.remove("is-valid");
+                        /* notyf.error('Empleado ya existe'); */
                     }
                 } catch (e) {
                     console.log("Respuesta no es JSON: " + response);
@@ -323,9 +328,7 @@ function registrarEmpleado(e) {
                 console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
             }
         });
-    } else {
-        notyf.error('Por favor, corrija los errores antes de registrar.');
-    }
+    } 
 }
 
 /* MODAL */
@@ -424,6 +427,9 @@ function modificarEmpleado(e) {
 
     const isValid = campos.every(campo => campo.classList.contains("is-valid"));
 
+    const dniInput = document.getElementById("dni");
+    const feedbackDni = document.getElementById("feedbackDNI");
+
     if (isValid) {
 
         const dni = document.getElementById("dni");
@@ -456,7 +462,10 @@ function modificarEmpleado(e) {
                             cerrarModalEmpleado();
                             loadEmployees();
                         } else {
-                            notyf.error('Empleado ya existe');
+                            /* notyf.error('Empleado ya existe'); */
+                            feedbackDni.textContent = "Empleado ya existe";
+                            dniInput.classList.add("is-invalid");
+                            dniInput.classList.remove("is-valid");
                         }
                     } catch (e) {
                         console.log("Respuesta no es JSON: " + response);

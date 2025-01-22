@@ -178,7 +178,7 @@ class EvidenceModel extends Query
         }
 
         if ($rol === 1 && empty($sucursal_filtro) && empty($empleado_filtro) && empty($desde) && empty($hasta)) {
-            return "Datos vacíos";
+            return "datos vacios";
         }
 
         $sql .= " ORDER BY a.fecha_subida DESC";
@@ -245,10 +245,8 @@ class EvidenceModel extends Query
         if (!empty($desde) && !empty($hasta)) {
             $sql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
             $filtrosAplicados[] = "Desde $desde hasta $hasta";
-        }
-
-        if (empty($desde) && empty($hasta)) {
-            return "Datos vacíos";
+        }else if (empty($desde) && empty($hasta)) {
+            return "datos vacios";
         }
 
         $sql .= " ORDER BY a.fecha_subida DESC";

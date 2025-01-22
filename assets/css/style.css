@@ -5,6 +5,7 @@
 @import 'Pages/user.css';
 @import 'Pages/encabezado.css';
 @import 'Pages/evidencias.css';
+@import 'Modules/loader.css';
 
 /*Fonts*/
 @font-face {

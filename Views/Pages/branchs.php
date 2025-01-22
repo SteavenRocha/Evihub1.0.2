@@ -65,7 +65,7 @@ include "Views/Modules/sidebar.php";
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="post" id="frmSucursal">
+                    <form method="post" id="frmSucursal" class="needs-validation" novalidate>
                         <input type="hidden" id="id_sucursal" name="id_sucursal"></input>
 
                         <div class="form-group">
@@ -76,11 +76,12 @@ include "Views/Modules/sidebar.php";
                                     class="form-control"
                                     type="text"
                                     name="nombre_sucursal"
-                                    placeholder="Ingrese nombre de la sucursal">
-                                <!--  <div class="invalid-feedback" id="feedbackNombres">
-                                required
-                                pattern="[A-Za-z\s]+"
-                                </div> -->
+                                    placeholder="Ingrese nombre de la sucursal"  
+                                    required
+                                    pattern="[A-Za-z\s]+">
+                                <div class="invalid-feedback" id="feedbackNombreSucursal">
+
+                                </div>
                             </div>
                         </div>
 

@@ -13,13 +13,13 @@ class UserModel extends Query
     {
 
         $sql = "SELECT 
-                u.id_usuario,
-                CONCAT(e.nombres, ' ', e.ape_paterno, ' ', e.ape_materno) AS nombre_completo,
-                u.id_rol,
-                r.nombre_rol,
-                u.usuario,
-                u.estado_usuario,
-                u.fecha_registro
+                    u.id_usuario,
+                    CONCAT(e.nombres, ' ', e.ape_paterno, ' ', e.ape_materno) AS nombre_completo,
+                    u.id_rol,
+                    r.nombre_rol,
+                    u.usuario,
+                    u.estado_usuario,
+                    u.fecha_registro
                 FROM 
                     usuario u
                 INNER JOIN 
@@ -27,13 +27,14 @@ class UserModel extends Query
                 INNER JOIN 
                     rol r ON u.id_rol = r.id_rol
                 ORDER BY 
-                    u.id_usuario DESC";
+                    u.id_rol ASC, u.id_usuario DESC;
+                ";
         $data['users'] = $this->selectAll($sql);
         return $data['users'];
     }
 
     public function getEmpleados()
-    {//consulta que selecciona a mis empelados que no estan registrados como usuarios
+    { //consulta que selecciona a mis empelados que no estan registrados como usuarios
         $sql = "SELECT 
                     e.id_empleado, 
                     e.nombres, 
@@ -148,4 +149,3 @@ class UserModel extends Query
         return $data;
     }
 }
-?>

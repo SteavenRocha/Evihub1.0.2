@@ -126,15 +126,14 @@ class Evidence extends Controller
         $empleado_filtro = !empty($_POST['empleado_filtro']) ? (int)$_POST['empleado_filtro'] : null;
         $desde = !empty($_POST['desde']) ? $_POST['desde'] : null;
         $hasta = !empty($_POST['hasta']) ? $_POST['hasta'] : ($desde ?? null);
-    
         // Si solo se ha enviado la fecha "desde", se asigna la misma fecha a "hasta" con hora 23:59:59
         if (empty($_POST['hasta']) && !empty($_POST['desde'])) {
             // Se asegura de que el formato de "hasta" esté al final del día
             $hasta = date('Y-m-d 23:59:59', strtotime($desde));
         }
-    
+
         $rol = $_SESSION['id_rol'];
-    
+
         // Verifica si las fechas están vacías antes de intentar formatearlas
         if (!empty($desde)) {
             $fecha_desde = new DateTime($desde);
@@ -142,17 +141,17 @@ class Evidence extends Controller
         } else {
             $fechaFormateadaDesde = null;
         }
-    
+
         if (!empty($hasta)) {
             $fecha_hasta = new DateTime($hasta);
             $fechaFormateadaHasta = $fecha_hasta->format('Y-m-d H:i:s');
         } else {
             $fechaFormateadaHasta = null;
         }
-    
+
         // Llama a la función para obtener los resultados
         $data['filtro'] = $this->model->filtrarArchivo($sucursal_filtro, $empleado_filtro, $fechaFormateadaDesde, $fechaFormateadaHasta, $rol);
-    
+
         if ($data['filtro'] == "datos vacios") {
             echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
             die();
@@ -160,10 +159,9 @@ class Evidence extends Controller
             echo json_encode(['error' => 'No se aplicaron fechas'], JSON_UNESCAPED_UNICODE);
             die();
         }
-        
         echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
         die();
-    }    
+    }
 
     public function filtrarEmpleado(int $id)
     {
@@ -175,12 +173,21 @@ class Evidence extends Controller
             // Se asegura de que el formato de "hasta" esté al final del día
             $hasta = date('Y-m-d 23:59:59', strtotime($desde));
         }
-        
-        $fecha_desde = new DateTime($desde);
-        $fechaFormateadaDesde = $fecha_desde->format('Y-m-d H:i:s');
 
-        $fecha_hasta = new DateTime($hasta);
-        $fechaFormateadaHasta = $fecha_hasta->format('Y-m-d H:i:s');
+        // Verifica si las fechas están vacías antes de intentar formatearlas
+        if (!empty($desde)) {
+            $fecha_desde = new DateTime($desde);
+            $fechaFormateadaDesde = $fecha_desde->format('Y-m-d H:i:s');
+        } else {
+            $fechaFormateadaDesde = null;
+        }
+
+        if (!empty($hasta)) {
+            $fecha_hasta = new DateTime($hasta);
+            $fechaFormateadaHasta = $fecha_hasta->format('Y-m-d H:i:s');
+        } else {
+            $fechaFormateadaHasta = null;
+        }
         /*  // Verifica que los datos no sean NULL o vacíos
         if (is_null($sucursal_filtro) || is_null($empleado_filtro) || is_null($desde) || is_null($hasta)) {
             // Puedes manejar el caso cuando faltan parámetros
@@ -194,11 +201,9 @@ class Evidence extends Controller
         if ($data['filtro'] == "datos vacios") {
             echo json_encode(['error' => 'No se aplicaron filtros'], JSON_UNESCAPED_UNICODE);
             die();
-        } else if ($data['filtro'] == "Debe especificar las fechas.") {
-            echo json_encode(['error' => 'No se aplicaron fechas'], JSON_UNESCAPED_UNICODE);
-            die();
         }
         echo json_encode($data['filtro'], JSON_UNESCAPED_UNICODE);
+        /* print_r($data); */
         die();
     }
 
@@ -298,7 +303,7 @@ class Evidence extends Controller
         }
     }
 
-    /*     public function zip()
+    /*  public function zip()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Leer datos enviados desde el frontend

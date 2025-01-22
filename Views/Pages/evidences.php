@@ -94,7 +94,9 @@ include "Views/Modules/sidebar.php";
 
                 </form>
 
-                <div class="sub-titulo">
+                <div id="loader" class="loader"></div>
+
+                <div class="sub-titulo" id="sub-titulo">
                     <p class="filtro-subtitulo" id="filtro-subtitulo">
                         <?php if ($_SESSION['id_rol'] == 1): ?>
                             Se muestran: <span id="cantidad-archivos"></span> archivo(s)
@@ -106,7 +108,7 @@ include "Views/Modules/sidebar.php";
                 </div>
 
                 <div id="cards-container">
-                    <!--  <div id="loader" class="loader"></div> -->
+
                 </div>
 
             </section>

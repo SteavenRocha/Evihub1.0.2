@@ -1,7 +1,5 @@
-// Obtener la tabla
 const tableBodyBranch = document.getElementById('tableSucursal');
 
-// Función para cargar los datos de usuarios
 function loadBranch() {
     // URL que devuelve los datos
     const url = BASE_URL + "Branch/listar";
@@ -22,7 +20,6 @@ function loadBranch() {
                 `;
                 tableBodyBranch.innerHTML = emptyRow;
             } else {
-                // Si hay datos, agregar las filas normalmente
                 /* console.log(data); */
                 data.forEach(branch => {
                     const statusClass = branch.estado_sucursal == 1 ? 'estado-activo' : 'estado-inactivo';
@@ -78,8 +75,9 @@ function loadBranch() {
 }
 
 const currentPathBranch = window.location.pathname;
+
 if (currentPathBranch.includes("/Branch")) {
-    // Llama a la función deseada
+
     document.addEventListener('DOMContentLoaded', loadBranch);
 
     document.getElementById('filtroSucursales').addEventListener('input', function () {
@@ -100,47 +98,47 @@ if (currentPathBranch.includes("/Branch")) {
 function registrarSucursal(e) {
     e.preventDefault();
 
-    // Verificar si todos los campos tienen la clase "is-valid"
-    /*  const campos = [
-         document.getElementById("dni"),
-         document.getElementById("nombres_empleado"),
-         document.getElementById("celular"),
-         document.getElementById("id_sucursal_empleado"),
-     ]; */
+    /* const nombre_sucursal = document.getElementById("nombre_sucursal");
+    const feedbackNombreSucursal = document.getElementById("feedbackNombreSucursal"); */
 
-    /*   const isValid = campos.every(campo => campo.classList.contains("is-valid")); */
+    if (nombre_sucursal.value.trim() === "") {
+        nombre_sucursal.classList.add("is-invalid");
+        feedbackNombreSucursal.textContent = "Por favor, ingrese el nombre de la sucursal.";
+    } else {
+        nombre_sucursal.classList.remove("is-invalid");
+        feedbackNombreSucursal.textContent = "";
 
-    /*  if (isValid) { */
-    const url = BASE_URL + "Branch/registrar";
-    const frm = $("#frmSucursal");
+        const url = BASE_URL + "Branch/registrar";
+        const frm = $("#frmSucursal");
 
-    $.ajax({
-        url: url,
-        type: "POST",
-        data: frm.serialize(), // Serializa los datos del formulario
-        success: function (response) {
-            try {
-                const res = JSON.parse(response);
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: frm.serialize(),
+            success: function (response) {
+                try {
+                    const res = JSON.parse(response);
 
-                if (res == "si") {
-                    notyf.success('Sucursal registrado con éxito');
-                    cerrarModalSucursal();
-                    loadBranch();
-                } else if (res == "existe") {
-                    notyf.error('Sucursal ya existe');
+                    if (res === "si") {
+                        notyf.success('Sucursal registrada con éxito');
+                        cerrarModalSucursal();
+                        loadBranch();
+                    } else if (res === "existe") {
+                        /* notyf.error('La sucursal ya existe'); */
+                        nombre_sucursal.classList.remove("is-valid")
+                        nombre_sucursal.classList.add("is-invalid");
+                        feedbackNombreSucursal.textContent = "Sucursal ya existe, porfavor ingrese otro nombre.";
+                    }
+                } catch (e) {
+                    console.log("Respuesta no es JSON: " + response);
                 }
-            } catch (e) {
-                console.log("Respuesta no es JSON: " + response);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
-        }
-    });
-    /* } else {
-        notyf.error('Por favor, corrija los errores antes de registrar.'); */
+        });
+    }
 }
-/* } */
 
 /* MODAL */
 $(document).ready(function () {
@@ -148,7 +146,6 @@ $(document).ready(function () {
     $("#btn_abrir_modal_sucursal").click(function () {
         frmSucursal();
         limpiarFormularioSucursal();
-        // asignarEventListeners();
     });
 
     $("#btn_accion_registrar_sucursal").click(function (e) {
@@ -171,25 +168,41 @@ function frmSucursal() {
      document.getElementById("select_empleado_editar").classList.add("d-none"); */
 
     document.getElementById("id_sucursal").value = "";
-    limpiarFormularioSucursal();
+    /*  limpiarFormularioSucursal(); */
     $("#nueva_sucursal").modal("show");
+
+    inputSelect();
 }
 
-/* function btnNuevaSucursal() {
-    
-} */
+function inputSelect() {
+    const nombre_sucursal = document.getElementById("nombre_sucursal");
+    const feedbackNombreSucursal = document.getElementById("feedbackNombreSucursal");
+
+    nombre_sucursal.addEventListener("input", () => {
+        if (nombre_sucursal.value.trim() === "") {
+            nombre_sucursal.classList.remove("is-valid");
+            nombre_sucursal.classList.add("is-invalid");
+            feedbackNombreSucursal.textContent = "Por favor, ingrese el nombre de la sucursal.";
+        } else {
+            nombre_sucursal.classList.remove("is-invalid");
+            nombre_sucursal.classList.add("is-valid");
+            feedbackNombreSucursal.textContent = "";
+        }
+    });
+}
 
 function limpiarFormularioSucursal() {
     const frm = document.getElementById("frmSucursal");
     frm.reset();
-    // Limpiar las clases de validación
-    /*  document.getElementById("dni").classList.remove("is-invalid", "is-valid");
-     document.getElementById("nombres_empleado").classList.remove("is-invalid", "is-valid");
-     document.getElementById("celular").classList.remove("is-invalid", "is-valid");
-     document.getElementById("id_sucursal_empleado").classList.remove("is-invalid", "is-valid"); */
 
-    // Limpiar los campos de texto
-    document.getElementById("nombre_sucursal").value = "";
+    const nombre_sucursal = document.getElementById("nombre_sucursal");
+    nombre_sucursal.value = "";
+
+    const feedbackNombreSucursal = document.getElementById("feedbackNombreSucursal");
+
+    nombre_sucursal.classList.remove("is-invalid");
+    nombre_sucursal.classList.remove("is-valid");
+    feedbackNombreSucursal.textContent = "";
 }
 
 function cerrarModalSucursal() {
@@ -199,25 +212,15 @@ function cerrarModalSucursal() {
 function modificarSucursal(e) {
     e.preventDefault();
 
-    // Verificar si todos los campos tienen la clase "is-valid"
-    /*  const campos = [
-         document.getElementById("dni"),
-         document.getElementById("nombres_empleado"),
-         document.getElementById("celular"),
-         document.getElementById("id_sucursal_empleado"),
-     ];
- 
-     const isValid = campos.every(campo => campo.classList.contains("is-valid")); */
-
-    /*  if (isValid) { */
-
     const nombre_sucursal = document.getElementById("nombre_sucursal");
 
-    if (nombre_sucursal.value == "") {
-
-        notyf.error('Todos los campos son necesarios');
-
+    if (nombre_sucursal.value.trim() === "") {
+        nombre_sucursal.classList.add("is-invalid");
+        feedbackNombreSucursal.textContent = "Por favor, ingrese el nombre de la sucursal.";
     } else {
+        nombre_sucursal.classList.remove("is-invalid");
+        feedbackNombreSucursal.textContent = "";
+
         const url = BASE_URL + "Branch/modificar";
         const frm = $("#frmSucursal");
 
@@ -229,16 +232,18 @@ function modificarSucursal(e) {
 
                 try {
                     const res = JSON.parse(response);
-
                     /*  console.log(res); */
-
                     if (res == "modificado") {
 
                         notyf.success('Sucursal modificada con exito');
                         cerrarModalSucursal();
                         loadBranch();
                     } else {
-                        notyf.error('Sucursal ya existe');
+                        /* notyf.error('Sucursal ya existe'); */
+                        nombre_sucursal.classList.remove("is-valid")
+                        nombre_sucursal.classList.add("is-invalid");
+                        feedbackNombreSucursal.textContent = "Sucursal ya existe, porfavor ingrese otro nombre.";
+                        inputSelect();
                     }
                 } catch (e) {
                     console.log("Respuesta no es JSON: " + response);
@@ -248,9 +253,9 @@ function modificarSucursal(e) {
                 console.error("Error en la solicitud: " + status + " - " + xhr + " - " + error);
             }
         });
+
     }
 }
-/* } */
 
 function btnDatosEditarSucursal() {
     document.getElementById("titulo_modal_sucursal").innerHTML = "Actualizar Sucursal";

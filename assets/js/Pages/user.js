@@ -462,6 +462,9 @@ function registrarUser(e) {
     // Verificar si todos los campos tienen la clase "is-valid"
     const isValid = campos.every(campo => campo.classList.contains("is-valid"));
 
+    const userInput = document.getElementById("usuario");
+    const feedbackUser = document.getElementById("feedbackUsuario");
+
     if (isValid) {
 
         const id_empleado = document.getElementById("id_empleado");
@@ -497,7 +500,10 @@ function registrarUser(e) {
                             cerrarModal();
                             loadUsers();
                         } else {
-                            notyf.error('Usuario ya existe');
+                          /*   notyf.error('Usuario ya existe'); */
+                          feedbackUser.textContent = "El usuario ya existe";
+                          userInput.classList.add("is-invalid");
+                          userInput.classList.remove("is-valid");
                         }
                     } catch (e) {
                         console.log("Respuesta no es JSON: " + response);
@@ -521,6 +527,9 @@ function modificarUser(e) {
 
     // Verificar si todos los campos tienen la clase "is-valid"
     const isValid = campos.every(campo => campo.classList.contains("is-valid"));
+
+    const userInput = document.getElementById("usuario");
+    const feedbackUser = document.getElementById("feedbackUsuario");
 
     if (isValid) {
 
@@ -552,7 +561,10 @@ function modificarUser(e) {
                             cerrarModal();
                             loadUsers();
                         } else {
-                            notyf.error('Usuario ya existe');
+                            /* notyf.error('Usuario ya existe'); */
+                            feedbackUser.textContent = "El usuario ya existe";
+                            userInput.classList.add("is-invalid");
+                            userInput.classList.remove("is-valid");
                         }
                     } catch (e) {
                         console.log("Respuesta no es JSON: " + response);
