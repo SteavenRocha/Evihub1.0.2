@@ -206,21 +206,21 @@ tbody td {
 }
 
 .btn-deshabilitar {
-    background-color: rgb(255, 70, 70); 
+    background-color: var(--rojo-boton);
     color: #fff;
 }
 
 .btn-deshabilitar:hover {
-    background-color: rgb(220, 30, 30); 
+    background-color: var(--rojo-hover);
 }
 
 .btn-habilitar {
-    background-color: rgb(80, 210, 80); 
+    background-color: var(--verde-boton);
     color: #fff;
 }
 
 .btn-habilitar:hover {
-    background-color: rgb(60, 160, 60);
+    background-color: var(--verde-hover);
 }
 
 .texto-emergente .tooltiptext {

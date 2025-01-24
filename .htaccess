@@ -1,4 +1,7 @@
+# Bloquear navegación de índices
 Options All -Indexes
+
+# Habilitar el motor de reescritura
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

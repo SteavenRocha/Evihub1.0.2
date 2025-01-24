@@ -1,21 +1,20 @@
 /* MODAL */
-.archivos {
+/* .archivos {
   align-items: center;
-}
-
+} */
 .custum-file-upload {
-  height: 200px;
-  width: 250px;
+  height: 70px;
+  width: 140px;
   display: flex;
-  flex-direction: column;
   align-items: space-between;
-  gap: 20px;
+  gap: 15px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #cacaca;
+  border: 2px dashed rgba(75, 85, 99, 1);
   background-color: rgba(255, 255, 255, 1);
-  padding: 1.5rem;
+  padding: 1.3rem;
+  margin: 6px;
   border-radius: 10px;
   box-shadow: 0px 48px 35px -48px rgba(0, 0, 0, 0.1);
 }
@@ -27,7 +26,8 @@
 }
 
 .custum-file-upload .icon svg {
-  height: 80px;
+  height: 30px;
+  width: 30px;
   fill: rgba(75, 85, 99, 1);
 }
 
@@ -160,6 +160,28 @@
 
 .card-icon svg:hover {
   background-color: rgba(173, 167, 167, 0.582);
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 100%;
+
+  }
+
+  .card-img img {
+    width: 15px;
+    height: 15px;
+    object-fit: cover;
+  }
+
+  .card-title {
+    width: 45%;
+    max-width: 45%;
+  }
+
+  .card-text p:last-of-type {
+    display: none;
+  }
 }
 
 /* no-files-message */
@@ -414,7 +436,7 @@ input[type="datetime-local"]:focus {
 /* Botón */
 .contenedor-btn-filter {
   margin-top: 22%;
-/*   margin-left: 3%; */
+  /*   margin-left: 3%; */
   height: 40px;
   width: 100%;
   display: flex;
@@ -547,7 +569,8 @@ input[type="datetime-local"]:focus {
 
   .contenedor-btn-filter {
     grid-column: 1;
-    margin-top: 5px;
+    margin-top: 10px;
+    justify-content: center;
   }
 }
 
@@ -558,7 +581,7 @@ input[type="datetime-local"]:focus {
   height: 450px;
   max-height: 450px;
   border: 1px solid #ddd;
-  /* border-radius: 0.5rem; */
+  border-radius: 0.5rem;
   background-color: #f9f9f9;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -578,6 +601,7 @@ input[type="datetime-local"]:focus {
 .previewContainer iframe embed {
   width: 50%;
   height: 50%;
+  border: 1px solid red;
 }
 
 /* DETALLES */
@@ -603,6 +627,38 @@ input[type="datetime-local"]:focus {
 .tabla-detalles-archivo th,
 .tabla-detalles-archivo td {
   border: 1px solid #ddd;
+}
+
+.column {
+  height: 450px;
+  max-height: 450px;
+  display: flex;
+  flex-direction: column;
+  align-items: space-between;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .modal-body-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .previewContainer {
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .column {
+    height: 100%;
+    max-height: 100%;
+  }
 }
 
 /* BOTÓN DE CIERRE */
@@ -676,4 +732,114 @@ input[type="datetime-local"]:focus {
 
 .table__body__card:hover::-webkit-scrollbar-thumb {
   visibility: visible;
+}
+
+/* TOMAR LA FOTO*/
+video {
+  max-width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: .6rem;
+  margin-bottom: 10px;
+}
+
+canvas {
+  max-width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: .6rem;
+  margin-bottom: 10px;
+}
+
+.foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.button-foto {
+  width: 70px;
+  height: 70px;
+  background-color: #ffffff;
+  border: 5px solid #ddd;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  outline: none;
+}
+
+.button-foto:hover {
+  border-color: #bbb;
+}
+
+.button-foto::after {
+  content: '';
+  width: 50px;
+  height: 50px;
+  background-color: #ff3b30;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s ease;
+}
+
+.button-foto:active::after {
+  background-color: #e02e26;
+}
+
+.mostrar-foto {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  transform: scale(0.9);
+}
+
+.mostrar-foto.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.foto video,
+.foto canvas {
+  width: 100%;
+  height: auto;
+}
+
+.foto .button-foto {
+  background-color: rgba(0, 0, 0, 0.226);
+}
+
+.acciones-foto {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.again {
+  background-color: var(--rojo-boton);
+}
+
+.save {
+  background-color: var(--verde-boton);
+}
+
+.again:hover {
+  background-color: var(--rojo-hover);
+}
+
+.save:hover {
+  background-color: var(--verde-hover);
+}
+
+.descargar-details {
+  display: flex;
+  align-items: row;
+  gap: 10px;
 }

@@ -12,7 +12,6 @@ if (currentPath.includes("/Evidence")) {
 
     });
 
-    // Llama a la función deseada
     const file = document.getElementById('file');
 
     $(document).ready(function () {
@@ -134,6 +133,125 @@ if (currentPath.includes("/Evidence")) {
         }
     });
 
+    /* ABRIR CAMARA */
+    let cameraStream = null;
+
+    const openCameraButton = document.getElementById('openCamera');
+
+    openCameraButton.addEventListener('click', async () => {
+        $("#modalFoto").modal("show");
+        $("#upload").modal("hide");
+
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            videoElement.srcObject = cameraStream;
+        } catch (error) {
+            console.error("No se pudo acceder a la cámara:", error);
+            alert("Error al abrir la cámara. Asegúrate de haber dado permisos.");
+        }
+
+        videoElement.style.display = 'block';
+    });
+
+    $('#modalFoto').on('hidden.bs.modal', () => {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+        }
+        resetCamera();
+    });
+
+    const videoElement = document.getElementById('camera');
+    const takePhotoButton = document.getElementById('takePhoto');
+    const canvas = document.getElementById('photoCanvas');
+    const context = canvas.getContext('2d');
+    const acciones_foto = document.getElementById('acciones-foto');
+    const again = document.getElementById('again');
+
+    takePhotoButton.addEventListener('click', () => {
+        videoElement.style.display = 'none';
+        takePhoto.style.display = 'none';
+        canvas.style.display = 'block';
+        acciones_foto.style.display = 'flex';
+
+        setTimeout(() => {
+            canvas.classList.add('show');
+        }, 50);
+
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    });
+
+    again.addEventListener('click', () => {
+        canvas.classList.remove('show');
+        setTimeout(() => {
+            canvas.style.display = 'none';
+            videoElement.style.display = 'block';
+            takePhoto.style.display = 'block';
+            acciones_foto.style.display = 'none';
+        }, 500);
+    });
+
+    const savePhotoButton = document.getElementById('savePhoto');
+
+    savePhotoButton.addEventListener('click', () => {
+        $("#modalFoto").modal("hide");
+
+        const imageData = canvas.toDataURL('image/png');
+
+        const byteString = atob(imageData.split(',')[1]);
+        const arrayBuffer = new ArrayBuffer(byteString.length);
+        const uintArray = new Uint8Array(arrayBuffer);
+
+        for (let i = 0; i < byteString.length; i++) {
+            uintArray[i] = byteString.charCodeAt(i);
+        }
+
+        const file = new Blob([uintArray], { type: 'image/png' });
+
+        // Usar FormData para enviar el archivo
+        const formData = new FormData();
+        formData.append("file", file, "photo.png");
+
+        const url = BASE_URL + "Evidence/upload";
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                try {
+                    const res = JSON.parse(response);
+                    if (res == "si") {
+                        btnLimpiarFiltro();
+                        btnLimpiarTitulo();
+                        loadRecentFiles();
+                        notyf.success("Foto guardada con éxito.");
+                    } else {
+                        notyf.error("Error al guardar la foto.");
+                    }
+                } catch (e) {
+                    console.error("Respuesta no es JSON: " + response);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud: " + status + " - " + error);
+            }
+        });
+
+        resetCamera();
+    });
+
+    function resetCamera() {
+        canvas.style.display = 'none';
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        videoElement.style.display = 'block';
+        takePhoto.style.display = 'block';
+        acciones_foto.style.display = 'none';
+    }
 }
 
 function loadCards(data) {
@@ -443,7 +561,7 @@ function busquedaFiltroEmpleado(idEmpleado) {
         notyf.error('La fecha "Desde" no puede ser mayor que la fecha "Hasta".');
         return;
     }
-    
+
     const url = BASE_URL + "Evidence/filtrarEmpleado/" + idEmpleado;
     const frm = $("#filtros");
 
@@ -487,6 +605,7 @@ function busquedaFiltroEmpleado(idEmpleado) {
 
                     loadRecentFilesEmpleado(idEmpleado);
                     btnLimpiarFiltroEmpleado();
+                    btnLimpiarTituloEmpleado();
                 }
             } catch (e) {
                 console.error("Respuesta no válida:", response);
@@ -573,6 +692,7 @@ function busquedaPorFiltro(e) {
                         loadRecentFilesEmpleado(idEmpleado);
                     }
                     btnLimpiarFiltro();
+                    btnLimpiarTitulo();
                 }
             } catch (e) {
                 console.error("Respuesta no válida:", response);
@@ -587,6 +707,9 @@ function busquedaPorFiltro(e) {
 }
 
 function btnDetallesArchivo(id) {
+    const detailsContainer = document.getElementById('descargar-details');
+    detailsContainer.innerHTML = '';
+
     $("#modalDetallesArchivo").modal("show");
 
     const url = BASE_URL + "Evidence/detalles/" + id;
@@ -625,13 +748,46 @@ function btnDetallesArchivo(id) {
                         ? 'aplication/excel'
                         : data.tipo_archivo;
 
-                    $("#tipoArchivo").text(tipoArchivo);  // Mostrar el tipo de archivo modificado
+                    $("#tipoArchivo").text(tipoArchivo);
 
                     $("#fechaSubida").text(data.fecha_subida);
                     $("#tamanoArchivo").text(data.size + ' KB');
                     $("#dniEmpleado").text(data.dni);
                     $("#nombresEmpleado").text(data.nombre_completo);
                     $("#nombreSucursal").text(data.nombre_sucursal);
+
+                    // Crear botón de descarga
+                    const downloadButton = document.createElement('a');
+                    downloadButton.href = filePath;
+                    downloadButton.download = data.nombre_archivo;
+                    downloadButton.target = "_blank";
+                    downloadButton.classList.add('button-add');
+
+                    downloadButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z"/>
+                            <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z"/>
+                        </svg>
+                        Descargar archivo
+                    `;
+
+                    detailsContainer.appendChild(downloadButton);
+
+                    // Si el archivo es PDF, agregar un botón para abrirlo en una nueva pestaña
+                    if (data.tipo_archivo === 'application/pdf') {
+                        const openPdfButton = document.createElement('a');
+                        openPdfButton.href = filePath;
+                        openPdfButton.target = "_blank"; // Abrir en nueva pestaña
+                        openPdfButton.classList.add('button-add');
+                        openPdfButton.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filetype-pdf" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM1.6 11.85H0v3.999h.791v-1.342h.803q.43 0 .732-.173.305-.175.463-.474a1.4 1.4 0 0 0 .161-.677q0-.375-.158-.677a1.2 1.2 0 0 0-.46-.477q-.3-.18-.732-.179m.545 1.333a.8.8 0 0 1-.085.38.57.57 0 0 1-.238.241.8.8 0 0 1-.375.082H.788V12.48h.66q.327 0 .512.181.185.183.185.522m1.217-1.333v3.999h1.46q.602 0 .998-.237a1.45 1.45 0 0 0 .595-.689q.196-.45.196-1.084 0-.63-.196-1.075a1.43 1.43 0 0 0-.589-.68q-.396-.234-1.005-.234zm.791.645h.563q.371 0 .609.152a.9.9 0 0 1 .354.454q.118.302.118.753a2.3 2.3 0 0 1-.068.592 1.1 1.1 0 0 1-.196.422.8.8 0 0 1-.334.252 1.3 1.3 0 0 1-.483.082h-.563zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638z"/>
+                            </svg>
+                            Ver PDF
+                        `;
+
+                        detailsContainer.appendChild(openPdfButton);
+                    }
                 } else {
                     console.warn("La respuesta está vacía.");
                 }

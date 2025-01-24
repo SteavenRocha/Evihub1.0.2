@@ -27,7 +27,7 @@ include "Views/Modules/sidebar.php";
                         id="filtroUsuarios"
                         class="input"
                         type="search"
-                        placeholder="Busca usuario..."
+                        placeholder="Buscar usuario..."
                         name="searchbar" />
                 </div>
 
@@ -60,7 +60,7 @@ include "Views/Modules/sidebar.php";
     <!-- Modal -->
     <!-- class="modal-dialog modal-dialog-centered" -->
     <div class="modal fade" id="nuevo_usuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="titulo_modal">Agregar Usuario</h5>
@@ -125,7 +125,7 @@ include "Views/Modules/sidebar.php";
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button id="btn_accion_registrar" type="button" class="btn btn-primary">Registrar</button>
                     <button id="btn_accion_editar" type="button" class="btn btn-primary">Modificar</button>
                 </div>

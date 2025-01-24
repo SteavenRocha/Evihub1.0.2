@@ -124,6 +124,7 @@ include "Views/Modules/sidebar.php";
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center">
+
                     <label class="custum-file-upload" for="file">
                         <div class="icon">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24">
@@ -135,16 +136,61 @@ include "Views/Modules/sidebar.php";
                             </svg>
                         </div>
                         <div class="text">
-                            <span>Click to upload image</span>
+                            <span>Subir archivo</span>
                         </div>
                         <input type="file" id="file" name="file" accept=".webp,.jpg,.jpeg,.png,.csv,.xlsx,.xls,.pdf">
 
                     </label>
+
+                    <label class="custum-file-upload">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
+                                <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z" />
+                                <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0" />
+                            </svg>
+                        </div>
+                        <div class="text">
+                            <span>Tomar foto</span>
+                        </div>
+                        <input type="button" id="openCamera">
+                    </label>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal foto-->
+    <div class="modal fade" id="modalFoto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Tomar foto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="foto">
+                        <video id="camera" autoplay playsinline></video>
+
+                        <div id="takePhoto" class="button-foto"></div>
+
+                        <canvas id="photoCanvas" class="mostrar-foto"></canvas>
+                    </div>
+                </div>
+                <div class="modal-footer acciones-foto" id="acciones-foto">
+
+                    <button id="again" type="button" class="button-add again"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>Volver a tomar foto</button>
+
+                    <button id="savePhoto" type="button" class="button-add save"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
+                            <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z" />
+                            <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z" />
+                        </svg>Guardar foto</button>
                 </div>
             </div>
         </div>
@@ -158,44 +204,50 @@ include "Views/Modules/sidebar.php";
                     <h5 class="modal-title" id="exampleModalLabel">Detalles del archivo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body d-flex align-items-start">
+                <div class="modal-body d-flex align-items-start modal-body-details">
                     <div id="previewContainer" class="previewContainer">
                         <!-- Aquí se cargará dinámicamente la vista previa -->
                     </div>
 
-                    <div class="details">
-                        <table class="table table-bordered tabla-detalles-archivo">
-                            <tbody>
-                                <tr>
-                                    <th>Nombre del archivo:</th>
-                                    <td id="nombreArchivo"></td>
-                                </tr>
-                                <tr>
-                                    <th>Tipo archivo:</th>
-                                    <td id="tipoArchivo"></td>
-                                </tr>
-                                <tr>
-                                    <th>Fecha de subida:</th>
-                                    <td id="fechaSubida"></td>
-                                </tr>
-                                <tr>
-                                    <th>Tamaño del archivo:</th>
-                                    <td id="tamanoArchivo"></td>
-                                </tr>
-                                <tr>
-                                    <th>DNI del empleado:</th>
-                                    <td id="dniEmpleado"></td>
-                                </tr>
-                                <tr>
-                                    <th>Empleado:</th>
-                                    <td id="nombresEmpleado"></td>
-                                </tr>
-                                <tr>
-                                    <th>Nombre de la sucursal:</th>
-                                    <td id="nombreSucursal"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="column">
+                        <div class="details">
+                            <table class="table table-bordered tabla-detalles-archivo">
+                                <tbody>
+                                    <tr>
+                                        <th>Nombre del archivo:</th>
+                                        <td id="nombreArchivo"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo archivo:</th>
+                                        <td id="tipoArchivo"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fecha de subida:</th>
+                                        <td id="fechaSubida"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tamaño del archivo:</th>
+                                        <td id="tamanoArchivo"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>DNI del empleado:</th>
+                                        <td id="dniEmpleado"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Empleado:</th>
+                                        <td id="nombresEmpleado"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nombre de la sucursal:</th>
+                                        <td id="nombreSucursal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="descargar-details" id="descargar-details">
+                           
+                        </div>
                     </div>
                 </div>
             </div>

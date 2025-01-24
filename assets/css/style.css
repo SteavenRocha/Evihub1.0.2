@@ -25,7 +25,11 @@
     --text-color: hsl(0, 0%, 35%);
     --body-color: hsl(0, 0%, 94%);
     --shadow-color: hsla(0, 0%, 0%, 0.15);
-
+    --verde-boton:rgb(41, 179, 41);
+    --verde-hover:rgb(32, 148, 32);
+    --rojo-boton: rgb(255, 70, 70); 
+    --rojo-hover: rgb(220, 30, 30); 
+    
     /*========== Font and typography ==========*/
     /*.5rem = 8px | 1rem = 16px ...*/
     --body-font: "Nunito Sans", system-ui;
