@@ -144,7 +144,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f7f7f7;
+  background-color: #fff;
 }
 
 .card-icon svg {
@@ -162,7 +162,7 @@
   background-color: rgba(173, 167, 167, 0.582);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 680px) {
   .card {
     width: 100%;
 
@@ -577,9 +577,9 @@ input[type="datetime-local"]:focus {
 /* IMAGEN MODAL - MODAL DETALLES */
 .previewContainer {
   width: 100%;
-  max-width: 300px;
-  height: 450px;
-  max-height: 450px;
+  max-width: 298px;
+  height: 480px;
+  max-height: 480px;
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   background-color: #f9f9f9;
@@ -588,7 +588,6 @@ input[type="datetime-local"]:focus {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-right: 15px;
 }
 
 .previewContainer iframe,
@@ -601,47 +600,58 @@ input[type="datetime-local"]:focus {
 .previewContainer iframe embed {
   width: 50%;
   height: 50%;
-  border: 1px solid red;
 }
 
 /* DETALLES */
 .details {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
+}
+
+.tabla-detalles-archivo {
+  table-layout: fixed; 
+  width: 100%; 
+  border-collapse: collapse; 
 }
 
 .tabla-detalles-archivo th {
-  color: var(--color-texto-header);
-  font-weight: bold;
-  text-align: left;
-  padding: 0.75rem;
-}
-
-.tabla-detalles-archivo td {
-  text-align: left;
-  padding: 0.75rem;
-  vertical-align: middle;
-  background-color: #f9f9f9;
+  color: var(--first-color-dark);
 }
 
 .tabla-detalles-archivo th,
 .tabla-detalles-archivo td {
+  word-wrap: break-word;
+  white-space: normal; 
   border: 1px solid #ddd;
+  text-align: left;
+  padding: 0.75rem;
+}
+
+.tabla-detalles-archivo td {
+  vertical-align: middle;
+  background-color: #f9f9f9;
 }
 
 .column {
-  height: 450px;
-  max-height: 450px;
+  width: 100%;
+  height: 480px;
+  max-height: 480px;
   display: flex;
   flex-direction: column;
-  align-items: space-between;
   align-items: center;
+  overflow: hidden; 
 }
 
-@media (max-width: 480px) {
+@media (max-width: 999px) {
   .modal-body-details {
     display: flex;
     flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-body {
+    display: flex;
+    justify-content: center;
     align-items: center;
   }
 
@@ -658,6 +668,7 @@ input[type="datetime-local"]:focus {
   .column {
     height: 100%;
     max-height: 100%;
+    overflow: auto; 
   }
 }
 
@@ -690,6 +701,13 @@ input[type="datetime-local"]:focus {
 .modal-title {
   font-size: 1.5rem;
   font-weight: 800;
+}
+
+.modal-body-details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 }
 
 /* .modal-body {

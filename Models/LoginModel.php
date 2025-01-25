@@ -8,15 +8,15 @@ class LoginModel extends Query{
 
     public function getUsuario(string $usuario, string $clave) {
         $sql = "SELECT 
-                U.id_usuario,
-                U.usuario,
-                E.id_empleado,
-                CONCAT(E.nombres, ' ', E.ape_paterno, ' ', E.ape_materno) AS nombre_completo,
-                S.id_sucursal,
-                S.nombre_sucursal,
-                R.id_rol,
-                R.nombre_rol,
-                U.estado_usuario
+                    U.id_usuario,
+                    U.usuario,
+                    E.id_empleado,
+                    CONCAT(E.nombres, ' ', E.ape_paterno, ' ', E.ape_materno) AS nombre_completo,
+                    S.id_sucursal,
+                    S.nombre_sucursal,
+                    R.id_rol,
+                    R.nombre_rol,
+                    U.estado_usuario
                 FROM 
                     USUARIO U
                 INNER JOIN 
@@ -25,12 +25,18 @@ class LoginModel extends Query{
                     SUCURSAL S ON E.id_sucursal = S.id_sucursal
                 INNER JOIN 
                     ROL R ON U.id_rol = R.id_rol
-                WHERE U.usuario = '$usuario' 
-                AND U.contraseña = '$clave'";
-        $data = $this->select($sql);
+                WHERE U.usuario = :usuario 
+                AND U.contraseña = :clave";
+    
+        // Aquí pasamos los parámetros de manera segura
+        $params = [
+            ':usuario' => $usuario,
+            ':clave' => $clave
+        ];
+        
+        $data = $this->select($sql, $params);
         return $data;
     }
-    
 }
  
 ?>

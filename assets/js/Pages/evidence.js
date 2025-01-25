@@ -51,10 +51,72 @@ if (currentPath.includes("/Evidence")) {
         $("#upload").modal("hide");
     }
 
+    // file.addEventListener('change', function (e) {
+    //     const file = e.target.files[0];
+    //     if (!file) return;
+
+    //     // Validar el tipo de archivo
+    //     const allowedTypes = [
+    //         'image/webp',
+    //         'image/jpeg',
+    //         'image/png',
+    //         'text/csv',
+    //         'application/vnd.ms-excel', // .xls
+    //         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+    //         'application/pdf'
+    //     ];
+    //     if (!allowedTypes.includes(file.type)) {
+    //         notyf.error("Archivo no soportado. Solo se permiten: WEBP, JPG, PNG, CSV, Excel (.xls, .xlsx) y PDF.");
+    //         e.target.value = '';
+    //         return;
+    //     }
+
+    //     const formData = new FormData();
+    //     formData.append("file", file);
+
+    //     const url = BASE_URL + "Evidence/upload";
+
+    //     $.ajax({
+    //         url: url,
+    //         type: "POST",
+    //         data: formData,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function (response) {
+    //             /* console.log(response); */
+    //             try {
+    //                 const res = JSON.parse(response);
+
+    //                 if (res == "si") {
+    //                     e.target.value = '';
+    //                     notyf.success("Archivo subido con éxito");
+    //                     if (idRol === 1) {
+    //                         btnLimpiarFiltro();
+    //                         btnLimpiarTitulo();
+    //                         loadRecentFiles();
+    //                     } else if (idRol === 2) {
+    //                         btnLimpiarFiltroEmpleado();
+    //                         btnLimpiarTituloEmpleado();
+    //                         loadRecentFilesEmpleado(idEmpleado);
+    //                     }
+    //                     cerrarModalUpload();
+    //                 } else {
+    //                     notyf.error("Error en la respuesta del servidor.");
+    //                 }
+    //             } catch (e) {
+    //                 console.error("Respuesta no es JSON: " + response);
+    //             }
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.error("Error en la solicitud: " + status + " - " + error);
+    //         }
+    //     });
+    // });
+
     file.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (!file) return;
-
+    
         // Validar el tipo de archivo
         const allowedTypes = [
             'image/webp',
@@ -70,48 +132,95 @@ if (currentPath.includes("/Evidence")) {
             e.target.value = '';
             return;
         }
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const url = BASE_URL + "Evidence/upload";
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                /* console.log(response); */
-                try {
-                    const res = JSON.parse(response);
-
-                    if (res == "si") {
-                        e.target.value = '';
-                        notyf.success("Archivo subido con éxito");
-                        if (idRol === 1) {
-                            btnLimpiarFiltro();
-                            btnLimpiarTitulo();
-                            loadRecentFiles();
-                        } else if (idRol === 2) {
-                            btnLimpiarFiltroEmpleado();
-                            btnLimpiarTituloEmpleado();
-                            loadRecentFilesEmpleado(idEmpleado);
+    
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+    
+                    // Establecer dimensiones deseadas
+                    const maxWidth = 1024; // Máximo ancho
+                    const maxHeight = 768; // Máximo alto
+                    let width = img.width;
+                    let height = img.height;
+    
+                    if (width > maxWidth || height > maxHeight) {
+                        if (width > height) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        } else {
+                            width *= maxHeight / height;
+                            height = maxHeight;
                         }
-                        cerrarModalUpload();
-                    } else {
-                        notyf.error("Error en la respuesta del servidor.");
                     }
-                } catch (e) {
-                    console.error("Respuesta no es JSON: " + response);
+    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+    
+                    // Comprimir la imagen (0.7 = calidad de compresión)
+                    canvas.toBlob(
+                        function (blob) {
+                            const compressedFile = new File([blob], file.name, { type: file.type });
+                            uploadFile(compressedFile); // Llamar a la función de subida
+                        },
+                        file.type,
+                        0.7 // Calidad (0-1)
+                    );
+                };
+            };
+        } else {
+            // Si no es una imagen, subir directamente
+            uploadFile(file);
+        }
+    
+        function uploadFile(uploadedFile) {
+            const formData = new FormData();
+            formData.append("file", uploadedFile);
+    
+            const url = BASE_URL + "Evidence/upload";
+    
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    try {
+                        const res = JSON.parse(response);
+    
+                        if (res == "si") {
+                            e.target.value = '';
+                            notyf.success("Archivo subido con éxito");
+                            if (idRol === 1) {
+                                btnLimpiarFiltro();
+                                btnLimpiarTitulo();
+                                loadRecentFiles();
+                            } else if (idRol === 2) {
+                                btnLimpiarFiltroEmpleado();
+                                btnLimpiarTituloEmpleado();
+                                loadRecentFilesEmpleado(idEmpleado);
+                            }
+                            cerrarModalUpload();
+                        } else {
+                            notyf.error("Error en la respuesta del servidor.");
+                        }
+                    } catch (e) {
+                        console.error("Respuesta no es JSON: " + response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud: " + status + " - " + error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud: " + status + " - " + error);
-            }
-        });
-    });
+            });
+        }
+    });    
 
     document.getElementById('desde').addEventListener('focus', function () {
         const datetimeInput = document.getElementById('desde');
@@ -751,7 +860,7 @@ function btnDetallesArchivo(id) {
                     $("#tipoArchivo").text(tipoArchivo);
 
                     $("#fechaSubida").text(data.fecha_subida);
-                    $("#tamanoArchivo").text(data.size + ' KB');
+                    $("#tamanoArchivo").text(data.size + ' B');
                     $("#dniEmpleado").text(data.dni);
                     $("#nombresEmpleado").text(data.nombre_completo);
                     $("#nombreSucursal").text(data.nombre_sucursal);

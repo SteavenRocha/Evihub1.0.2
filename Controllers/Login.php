@@ -21,19 +21,16 @@ class Login extends Controller
         if (empty($_POST['usuario']) || empty($_POST['clave'])) {
             $msg = "Los campos están vacíos";
         } else {
-            $usuario = $_POST['usuario'];
-            $clave = $_POST['clave'];
+            $usuario = htmlspecialchars($_POST['usuario']); 
+            $clave = htmlspecialchars($_POST['clave']); 
             $hash = hash("SHA256", $clave);
 
-            // Obtén los datos del usuario
             $data['login'] = $this->model->getUsuario($usuario, $hash);
 
             if ($data['login']) {
-                // Verifica el estado del usuario
                 if ($data['login']['estado_usuario'] == 0) {
                     $msg = "Usuario inactivo";
                 } else {
-                    // Usuario válido, inicia sesión
                     $_SESSION['id_usuario'] = $data['login']['id_usuario'];
                     $_SESSION['usuario'] = $data['login']['usuario'];
                     $_SESSION['id_empleado'] = $data['login']['id_empleado'];
@@ -48,7 +45,6 @@ class Login extends Controller
                     $msg = "ok";
                 }
             } else {
-                // Usuario o contraseña incorrectos
                 $msg = "Usuario o contraseña incorrecta";
             }
         }
@@ -56,7 +52,6 @@ class Login extends Controller
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
 
     public function salir()
     {

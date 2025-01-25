@@ -204,7 +204,7 @@ include "Views/Modules/sidebar.php";
                     <h5 class="modal-title" id="exampleModalLabel">Detalles del archivo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body d-flex align-items-start modal-body-details">
+                <div class="modal-body d-flex align-items-center modal-body-details">
                     <div id="previewContainer" class="previewContainer">
                         <!-- Aquí se cargará dinámicamente la vista previa -->
                     </div>
