@@ -1,0 +1,21 @@
+.contenido {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* z-index: var(--z-fixed); */
+    margin-top: 80px;
+    margin-bottom: .75rem;
+    margin-right: .75rem;
+    
+    background-color: var(--body-color);
+    border-radius: .6rem;
+    box-shadow: 2px 0 24px var(--shadow-color);
+
+    position: fixed;
+    justify-content: center;
+    overflow: hidden;
+
+    display: flex; 
+    flex-direction: column;
+}

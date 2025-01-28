@@ -2,21 +2,62 @@
 /* .archivos {
   align-items: center;
 } */
+/* LOADER*/
+.loader {
+  width: 100%;
+  display: block;
+  --height-of-loader: 2px;
+  height: var(--height-of-loader);
+  background-color: rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  background: var(--first-color);
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 30px;
+  animation: moving 1s ease-in-out infinite;
+  ;
+}
+
+@keyframes moving {
+  50% {
+    width: 100%;
+  }
+
+  100% {
+    width: 0;
+    right: 0;
+    left: unset;
+  }
+}
+
+/* MODAL SUBIR ARCHIVO*/
 .custum-file-upload {
-  height: 70px;
-  width: 140px;
+  height: 190px;
+  width: 230px;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
   align-items: space-between;
-  gap: 15px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
   border: 2px dashed rgba(75, 85, 99, 1);
-  background-color: rgba(255, 255, 255, 1);
-  padding: 1.3rem;
-  margin: 6px;
+  background-color: rgb(255, 255, 255);
+  /*   padding: 1.3rem;
+  margin: 3px; */
   border-radius: 10px;
   box-shadow: 0px 48px 35px -48px rgba(0, 0, 0, 0.1);
+}
+
+.custum-file-upload:hover {
+  background-color: rgb(223, 222, 222);
 }
 
 .custum-file-upload .icon {
@@ -26,8 +67,8 @@
 }
 
 .custum-file-upload .icon svg {
-  height: 30px;
-  width: 30px;
+  height: 70px;
+  width: 70px;
   fill: rgba(75, 85, 99, 1);
 }
 
@@ -39,6 +80,7 @@
 
 .custum-file-upload .text span {
   font-weight: 400;
+  font-size: 1rem;
   color: rgba(75, 85, 99, 1);
 }
 
@@ -201,12 +243,14 @@
   /* Borde gris muy claro y sutil */
   width: 100%;
   height: 100%;
-  max-height: calc(100% - 100px);
   background-color: transparent;
   margin: 0 auto;
   overflow: auto;
   overflow: overlay;
   padding-top: 1.5%;
+  flex-grow: 1;
+
+  border: 1px solid red;
   /* Agregar sombra sutil para hacer el borde más notorio */
   /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.39); */
 }
@@ -263,6 +307,9 @@
   color: #000000;
 
   letter-spacing: 0.5px;
+
+  text-align: left;
+  word-wrap: break-word;
 }
 
 .sub-titulo .filtros-aplicados {
@@ -270,6 +317,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+
+  width: auto;
+
+  white-space: nowrap;
+  overflow: hidden;
+  /*  text-overflow: ellipsis; */
+  margin-right: 1rem;
 }
 
 .sub-titulo .filtros-aplicados span {
@@ -609,9 +663,9 @@ input[type="datetime-local"]:focus {
 }
 
 .tabla-detalles-archivo {
-  table-layout: fixed; 
-  width: 100%; 
-  border-collapse: collapse; 
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .tabla-detalles-archivo th {
@@ -621,7 +675,7 @@ input[type="datetime-local"]:focus {
 .tabla-detalles-archivo th,
 .tabla-detalles-archivo td {
   word-wrap: break-word;
-  white-space: normal; 
+  white-space: normal;
   border: 1px solid #ddd;
   text-align: left;
   padding: 0.75rem;
@@ -639,7 +693,7 @@ input[type="datetime-local"]:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 @media (max-width: 999px) {
@@ -668,7 +722,7 @@ input[type="datetime-local"]:focus {
   .column {
     height: 100%;
     max-height: 100%;
-    overflow: auto; 
+    overflow: auto;
   }
 }
 
@@ -753,7 +807,7 @@ input[type="datetime-local"]:focus {
 }
 
 /* TOMAR LA FOTO*/
-video {
+/* video {
   max-width: 100%;
   height: 100%;
   border: 1px solid #ccc;
@@ -860,4 +914,4 @@ canvas {
   display: flex;
   align-items: row;
   gap: 10px;
-}
+} */

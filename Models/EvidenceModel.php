@@ -1,7 +1,7 @@
 <?php
 class EvidenceModel extends Query
 {
-    private $id_usuario, $id_sucursal, $name, $tipo, $size, $filePathRelative;
+    private $id_usuario, $id_sucursal, $name, $tipo, $size, $filePathRelative, $id, $estado;
     public function __construct()
     {
         parent::__construct();
@@ -148,7 +148,9 @@ class EvidenceModel extends Query
                 USUARIO u ON a.id_usuario = u.id_usuario
             JOIN
                 EMPLEADO e ON u.id_empleado = e.id_empleado
-            WHERE 1=1";
+            WHERE 
+                a.estado_archivo = 1
+            AND 1=1";
 
         $filtrosAplicados = [];
 
@@ -157,7 +159,7 @@ class EvidenceModel extends Query
                 return "Debe especificar las fechas.";
             }
             $sql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
-            $filtrosAplicados[] = "Desde $desde hasta $hasta";
+            $filtrosAplicados[] = ["desde" => $desde, "hasta" => $hasta];
         } else if ($rol === 1) { 
             if (!empty($sucursal_filtro)) {
                 $sql .= " AND s.id_sucursal = $sucursal_filtro";
@@ -171,7 +173,7 @@ class EvidenceModel extends Query
 
             if (!empty($desde) && !empty($hasta)) {
                 $sql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
-                $filtrosAplicados[] = "Desde $desde hasta $hasta";
+                $filtrosAplicados[] = ["desde" => $desde, "hasta" => $hasta];
             }
         } else {
             return "Rol no válido.";
@@ -189,7 +191,8 @@ class EvidenceModel extends Query
                  JOIN SUCURSAL s ON a.id_sucursal = s.id_sucursal
                  JOIN USUARIO u ON a.id_usuario = u.id_usuario
                  JOIN EMPLEADO e ON u.id_empleado = e.id_empleado
-                 WHERE 1=1";
+                 WHERE a.estado_archivo = 1
+                 AND 1=1";
 
         if ($rol === 2) {
             if (!empty($desde) && !empty($hasta)) {
@@ -238,13 +241,15 @@ class EvidenceModel extends Query
                 USUARIO u ON a.id_usuario = u.id_usuario
             JOIN
                 EMPLEADO e ON u.id_empleado = e.id_empleado
-            WHERE u.id_empleado = $id";
+            WHERE u.id_empleado = $id
+            AND a.estado_archivo = 1";
 
         $filtrosAplicados = [];
 
         if (!empty($desde) && !empty($hasta)) {
             $sql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
-            $filtrosAplicados[] = "Desde $desde hasta $hasta";
+            $filtrosAplicados[] = ["desde" => $desde, "hasta" => $hasta];
+            
         }else if (empty($desde) && empty($hasta)) {
             return "datos vacios";
         }
@@ -258,7 +263,8 @@ class EvidenceModel extends Query
                  JOIN SUCURSAL s ON a.id_sucursal = s.id_sucursal
                  JOIN USUARIO u ON a.id_usuario = u.id_usuario
                  JOIN EMPLEADO e ON u.id_empleado = e.id_empleado
-                 WHERE u.id_empleado = $id";
+                 WHERE u.id_empleado = $id
+                 AND a.estado_archivo = 1";
 
         if (!empty($desde) && !empty($hasta)) {
             $countSql .= " AND a.fecha_subida BETWEEN '$desde' AND '$hasta'";
@@ -503,5 +509,16 @@ class EvidenceModel extends Query
 
         $data['details'] = $this->selectAll($sql);
         return $data['details'];
+    }
+
+    public function eliminarArchivo(int $estado, int $id)
+    {
+        $this->estado = $estado;
+        $this->id = $id;
+
+        $sql = "UPDATE ARCHIVO SET estado_archivo = ? WHERE id_archivo = ?";
+        $datos['eliminar'] = array($this->estado, $this->id);
+        $data = $this->save($sql, $datos['eliminar']);
+        return $data;
     }
 }

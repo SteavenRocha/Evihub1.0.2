@@ -7,9 +7,8 @@ include "Views/Modules/sidebar.php";
 <main class="main">
 
     <div class="contenido" id="main">
-        <div class="cuerpo-tabla">
-            <section class="table__header">
-
+        <section class="table__header">
+            <div class="button-titulo">
                 <div class="form-titulo">
                     <span>Archivos</span>
                     <div class="form-logo-glow"></div>
@@ -17,12 +16,13 @@ include "Views/Modules/sidebar.php";
 
                 <button title="Agregar" id="btnUpload" type="button" class="button-add"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0" />
-                    </svg>AGREGAR</button>
-            </section>
+                    </svg></button>
+            </div>
+        </section>
 
-            <section class="table__body__card">
+        <section class="table__body__card">
 
-                <!-- <div class="table__sub_header">
+            <!-- <div class="table__sub_header">
                     <h3>
                         <span class="label">EMPLEADO:</span>
                         <span class="data"><?php echo isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : 'Usuario'; ?></span>
@@ -33,86 +33,86 @@ include "Views/Modules/sidebar.php";
                     </h3>
                 </div> -->
 
-                <form method="post" class="filtros" id="filtros">
+            <form method="post" class="filtros" id="filtros">
 
-                    <label class="titulo-filtro">Filtro de busqueda</label>
+                <label class="titulo-filtro">Filtro de busqueda</label>
 
-                    <div class="filtro-sucursal <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'bloqueado' : ''; ?>">
-                        <label for="sucursal_filtro">Sucursal:</label>
-                        <select
-                            name="sucursal_filtro"
-                            class="form-select"
-                            id="sucursal_filtro"
-                            aria-label="Seleccione sucursal"
-                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled title="Opción deshabilitada"' : ''; ?>>
-                            <!-- Opciones dinámicas -->
-                        </select>
-                    </div>
-
-                    <div class="filtro-empleado <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'bloqueado' : ''; ?>">
-                        <label for="empleado_filtro">Empleado:</label>
-                        <select
-                            name="empleado_filtro"
-                            class="form-select"
-                            id="empleado_filtro"
-                            aria-label="Seleccione empleado"
-                            <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled title="Opción deshabilitada"' : ''; ?>>
-                            <!-- Opciones dinámicas -->
-                        </select>
-                    </div>
-
-                    <div class="fecha-desde">
-                        <label for="desde">Desde:</label>
-                        <input type="datetime-local" id="desde" name="desde">
-                    </div>
-
-                    <div class="fecha-hasta">
-                        <label for="hasta">Hasta:</label>
-                        <input type="datetime-local" id="hasta" name="hasta">
-                    </div>
-
-                    <div class="contenedor-btn-filter">
-                        <button type="button" class="filter-btn" id="filter-btn" title="Aplicar filtros">
-                            <span class="bar bar1"></span>
-                            <span class="bar bar2"></span>
-                            <span class="bar bar1"></span>
-                        </button>
-
-                        <button type="button" class="limpiar-btn" id="limpiar-btn" title="Limpiar filtros">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-brush" viewBox="0 0 16 16">
-                                <path d="M15.825.14a.5.5 0 0 1 .034.705l-9.01 9.89c-.288.318-.352.75-.293 1.132.057.377.213.784.465 1.036a2.5 2.5 0 1 1-3.536 0c.252-.252.659-.408 1.036-.465.382-.059.814.005 1.132.293l9.89-9.01a.5.5 0 0 1 .705.034z" />
-                            </svg>
-                        </button>
-
-                        <button type="button" class="descargar-btn" id="download-zip-btn" title="Descargar archivos">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-down" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z" />
-                                <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z" />
-                            </svg>
-                        </button>
-                    </div>
-
-                </form>
-
-                <div id="loader" class="loader"></div>
-
-                <div class="sub-titulo" id="sub-titulo">
-                    <p class="filtro-subtitulo" id="filtro-subtitulo">
-                        <?php if ($_SESSION['id_rol'] == 1): ?>
-                            Se muestran: <span id="cantidad-archivos"></span> archivo(s)
-                        <?php else: ?>
-                            Se muestran: <span id="cantidad-archivos"></span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>
-                        <?php endif; ?>
-                    </p>
-                    <p class="filtros-aplicados" id="filtros-aplicados"></p>
+                <div class="filtro-sucursal <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'bloqueado' : ''; ?>">
+                    <label for="sucursal_filtro">Sucursal:</label>
+                    <select
+                        name="sucursal_filtro"
+                        class="form-select"
+                        id="sucursal_filtro"
+                        aria-label="Seleccione sucursal"
+                        <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled title="Opción deshabilitada"' : ''; ?>>
+                        <!-- Opciones dinámicas -->
+                    </select>
                 </div>
 
-                <div id="cards-container">
-
+                <div class="filtro-empleado <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'bloqueado' : ''; ?>">
+                    <label for="empleado_filtro">Empleado:</label>
+                    <select
+                        name="empleado_filtro"
+                        class="form-select"
+                        id="empleado_filtro"
+                        aria-label="Seleccione empleado"
+                        <?php echo (isset($_SESSION['id_rol']) && $_SESSION['id_rol'] == 2) ? 'disabled title="Opción deshabilitada"' : ''; ?>>
+                        <!-- Opciones dinámicas -->
+                    </select>
                 </div>
 
-            </section>
-        </div>
+                <div class="fecha-desde">
+                    <label for="desde">Desde:</label>
+                    <input type="datetime-local" id="desde" name="desde">
+                </div>
+
+                <div class="fecha-hasta">
+                    <label for="hasta">Hasta:</label>
+                    <input type="datetime-local" id="hasta" name="hasta">
+                </div>
+
+                <div class="contenedor-btn-filter">
+                    <button type="button" class="filter-btn" id="filter-btn" title="Aplicar filtros">
+                        <span class="bar bar1"></span>
+                        <span class="bar bar2"></span>
+                        <span class="bar bar1"></span>
+                    </button>
+
+                    <button type="button" class="limpiar-btn" id="limpiar-btn" title="Limpiar filtros">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-brush" viewBox="0 0 16 16">
+                            <path d="M15.825.14a.5.5 0 0 1 .034.705l-9.01 9.89c-.288.318-.352.75-.293 1.132.057.377.213.784.465 1.036a2.5 2.5 0 1 1-3.536 0c.252-.252.659-.408 1.036-.465.382-.059.814.005 1.132.293l9.89-9.01a.5.5 0 0 1 .705.034z" />
+                        </svg>
+                    </button>
+
+                    <button type="button" class="descargar-btn" id="download-zip-btn" title="Descargar archivos">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z" />
+                            <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z" />
+                        </svg>
+                    </button>
+                </div>
+
+            </form>
+
+            <div class="loader" id="loader">
+            </div>
+
+            <div class="sub-titulo" id="sub-titulo">
+                <p class="filtro-subtitulo" id="filtro-subtitulo">
+                    <?php if ($_SESSION['id_rol'] == 1): ?>
+                        Se muestran: <span id="cantidad-archivos"></span> archivo(s)
+                    <?php else: ?>
+                        Se muestran: <span id="cantidad-archivos"></span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>
+                    <?php endif; ?>
+                </p>
+                <p class="filtros-aplicados" id="filtros-aplicados"></p>
+            </div>
+
+            <div id="cards-container">
+
+            </div>
+
+        </section>
     </div>
 
     <!-- Modal subir archivo -->
@@ -136,13 +136,13 @@ include "Views/Modules/sidebar.php";
                             </svg>
                         </div>
                         <div class="text">
-                            <span>Subir archivo</span>
+                            <span>Subir archivo o tomar foto</span>
                         </div>
                         <input type="file" id="file" name="file" accept=".webp,.jpg,.jpeg,.png,.csv,.xlsx,.xls,.pdf">
 
                     </label>
 
-                    <label class="custum-file-upload">
+                    <!--  <label class="custum-file-upload">
                         <div class="icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
                                 <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z" />
@@ -153,7 +153,7 @@ include "Views/Modules/sidebar.php";
                             <span>Tomar foto</span>
                         </div>
                         <input type="button" id="openCamera">
-                    </label>
+                    </label> -->
                 </div>
 
                 <div class="modal-footer">
@@ -165,7 +165,7 @@ include "Views/Modules/sidebar.php";
     </div>
 
     <!-- Modal foto-->
-    <div class="modal fade" id="modalFoto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!--     <div class="modal fade" id="modalFoto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -194,7 +194,7 @@ include "Views/Modules/sidebar.php";
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Modal detalles archivo-->
     <div class="modal fade" id="modalDetallesArchivo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -246,7 +246,7 @@ include "Views/Modules/sidebar.php";
                         </div>
 
                         <div class="descargar-details" id="descargar-details">
-                           
+
                         </div>
                     </div>
                 </div>

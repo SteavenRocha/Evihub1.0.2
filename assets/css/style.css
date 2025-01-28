@@ -1,11 +1,12 @@
 @import 'Modules/sidebar.css';
 @import 'Modules/header.css';
 
+@import 'Pages/main.css';
 @import 'Pages/login.css';
 @import 'Pages/user.css';
 @import 'Pages/encabezado.css';
 @import 'Pages/evidencias.css';
-@import 'Modules/loader.css';
+@import 'Pages/table.css';
 
 /*Fonts*/
 @font-face {

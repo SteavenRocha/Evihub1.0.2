@@ -1,18 +1,25 @@
 .table__header {
     width: 100%;
-    height: 80px;
+    height: auto;
     background-color: var(--color-header);
+    padding: 15px 0;
     padding-right: 1.4rem;
-    padding-left: 0.2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.button-titulo {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .form-titulo {
     margin-left: 1.3rem;
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     text-align: center;
     color: var(--title-color);
     font-weight: 850;
@@ -21,7 +28,7 @@
     letter-spacing: 1px;
     display: flex;
     justify-content: center;
-    align-items: center;  
+    align-items: center;
 }
 
 .form-titulo:hover .form-logo-glow {
@@ -32,25 +39,19 @@
 .button-add {
     border: none;
     display: flex;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 0.5rem;
     background-color: var(--first-color);
     color: #ffffff;
-    font-size: 0.75rem;
-    line-height: 1rem;
-    font-weight: 600;
-    text-align: center;
     cursor: pointer;
-    text-transform: uppercase;
     vertical-align: middle;
     align-items: center;
     border-radius: 0.4rem;
     user-select: none;
-    gap: 0.75rem;
     box-shadow:
         0 4px 6px -1px hsla(0, 0%, 0%, 0.15),
         0 2px 4px -1px hsla(0, 0%, 0%, 0.15);
     transition: all 0.6s ease;
-    height: 39px;
+    height: 33px;
 }
 
 .button-add:hover {
@@ -67,18 +68,13 @@
     box-shadow: none;
 }
 
-.button-add svg {
-    width: 1.25rem;
-    height: 1.25rem;
-}
-
 /* BARRA DE BUSQUEDA */
 .group {
     display: flex;
     line-height: 28px;
     align-items: center;
     position: relative;
-    width: 500px;
+    width: 100%;
 }
 
 .group .input {
@@ -122,46 +118,18 @@
     z-index: 1;
 }
 
-@media (max-width: 480px) {
-    /* Ajustes para el título */
-    .form-titulo {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 1.8rem;
-        margin: 0 1rem;
-        text-align: center;
-    }
-
-    .form-titulo span {
-        font-size: 1.8rem; 
-    }
-
+@media (max-width: 500px) {
     .table__header {
-        flex-direction: column; 
-        height: auto; 
-        padding-right: 1rem;
-        padding-left: 1rem; 
+        display: block;
     }
 
-    .button-add {
-        width: 100%;
-        margin: 10px;
+    .button-titulo {
+        justify-content: space-between;
     }
 
     .group {
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .group .input {
-        width: 100%;
-        height: 35px; 
-    }
-
-    .search-icon {
-        left: 1rem;
-        width: 1rem;
-        height: 1rem;
+        margin-left: 1.3rem;
+        padding-right: 1.3rem;
+        padding-top: 10px;
     }
 }

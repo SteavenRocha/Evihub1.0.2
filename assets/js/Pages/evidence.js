@@ -51,6 +51,10 @@ if (currentPath.includes("/Evidence")) {
         $("#upload").modal("hide");
     }
 
+    function cerrarModalDetalles() {
+        $("#modalDetallesArchivo").modal("hide");
+    }
+
     // file.addEventListener('change', function (e) {
     //     const file = e.target.files[0];
     //     if (!file) return;
@@ -116,7 +120,7 @@ if (currentPath.includes("/Evidence")) {
     file.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (!file) return;
-    
+
         // Validar el tipo de archivo
         const allowedTypes = [
             'image/webp',
@@ -132,7 +136,7 @@ if (currentPath.includes("/Evidence")) {
             e.target.value = '';
             return;
         }
-    
+
         if (file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -142,13 +146,13 @@ if (currentPath.includes("/Evidence")) {
                 img.onload = function () {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-    
+
                     // Establecer dimensiones deseadas
                     const maxWidth = 1024; // Máximo ancho
                     const maxHeight = 768; // Máximo alto
                     let width = img.width;
                     let height = img.height;
-    
+
                     if (width > maxWidth || height > maxHeight) {
                         if (width > height) {
                             height *= maxWidth / width;
@@ -158,11 +162,11 @@ if (currentPath.includes("/Evidence")) {
                             height = maxHeight;
                         }
                     }
-    
+
                     canvas.width = width;
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-    
+
                     // Comprimir la imagen (0.7 = calidad de compresión)
                     canvas.toBlob(
                         function (blob) {
@@ -178,13 +182,13 @@ if (currentPath.includes("/Evidence")) {
             // Si no es una imagen, subir directamente
             uploadFile(file);
         }
-    
+
         function uploadFile(uploadedFile) {
             const formData = new FormData();
             formData.append("file", uploadedFile);
-    
+
             const url = BASE_URL + "Evidence/upload";
-    
+
             $.ajax({
                 url: url,
                 type: "POST",
@@ -194,7 +198,7 @@ if (currentPath.includes("/Evidence")) {
                 success: function (response) {
                     try {
                         const res = JSON.parse(response);
-    
+
                         if (res == "si") {
                             e.target.value = '';
                             notyf.success("Archivo subido con éxito");
@@ -220,7 +224,7 @@ if (currentPath.includes("/Evidence")) {
                 }
             });
         }
-    });    
+    });
 
     document.getElementById('desde').addEventListener('focus', function () {
         const datetimeInput = document.getElementById('desde');
@@ -243,124 +247,124 @@ if (currentPath.includes("/Evidence")) {
     });
 
     /* ABRIR CAMARA */
-    let cameraStream = null;
-
-    const openCameraButton = document.getElementById('openCamera');
-
-    openCameraButton.addEventListener('click', async () => {
-        $("#modalFoto").modal("show");
-        $("#upload").modal("hide");
-
-        try {
-            cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
-            videoElement.srcObject = cameraStream;
-        } catch (error) {
-            console.error("No se pudo acceder a la cámara:", error);
-            alert("Error al abrir la cámara. Asegúrate de haber dado permisos.");
-        }
-
-        videoElement.style.display = 'block';
-    });
-
-    $('#modalFoto').on('hidden.bs.modal', () => {
-        if (cameraStream) {
-            cameraStream.getTracks().forEach(track => track.stop());
-        }
-        resetCamera();
-    });
-
-    const videoElement = document.getElementById('camera');
-    const takePhotoButton = document.getElementById('takePhoto');
-    const canvas = document.getElementById('photoCanvas');
-    const context = canvas.getContext('2d');
-    const acciones_foto = document.getElementById('acciones-foto');
-    const again = document.getElementById('again');
-
-    takePhotoButton.addEventListener('click', () => {
-        videoElement.style.display = 'none';
-        takePhoto.style.display = 'none';
-        canvas.style.display = 'block';
-        acciones_foto.style.display = 'flex';
-
-        setTimeout(() => {
-            canvas.classList.add('show');
-        }, 50);
-
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
-
-        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-    });
-
-    again.addEventListener('click', () => {
-        canvas.classList.remove('show');
-        setTimeout(() => {
+    /*     let cameraStream = null;
+    
+        const openCameraButton = document.getElementById('openCamera');
+    
+        openCameraButton.addEventListener('click', async () => {
+            $("#modalFoto").modal("show");
+            $("#upload").modal("hide");
+    
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = cameraStream;
+            } catch (error) {
+                console.error("No se pudo acceder a la cámara:", error);
+                alert("Error al abrir la cámara. Asegúrate de haber dado permisos.");
+            }
+    
+            videoElement.style.display = 'block';
+        });
+    
+        $('#modalFoto').on('hidden.bs.modal', () => {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+            resetCamera();
+        });
+    
+        const videoElement = document.getElementById('camera');
+        const takePhotoButton = document.getElementById('takePhoto');
+        const canvas = document.getElementById('photoCanvas');
+        const context = canvas.getContext('2d');
+        const acciones_foto = document.getElementById('acciones-foto');
+        const again = document.getElementById('again');
+    
+        takePhotoButton.addEventListener('click', () => {
+            videoElement.style.display = 'none';
+            takePhoto.style.display = 'none';
+            canvas.style.display = 'block';
+            acciones_foto.style.display = 'flex';
+    
+            setTimeout(() => {
+                canvas.classList.add('show');
+            }, 50);
+    
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+    
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        });
+    
+        again.addEventListener('click', () => {
+            canvas.classList.remove('show');
+            setTimeout(() => {
+                canvas.style.display = 'none';
+                videoElement.style.display = 'block';
+                takePhoto.style.display = 'block';
+                acciones_foto.style.display = 'none';
+            }, 500);
+        });
+    
+        const savePhotoButton = document.getElementById('savePhoto');
+    
+        savePhotoButton.addEventListener('click', () => {
+            $("#modalFoto").modal("hide");
+    
+            const imageData = canvas.toDataURL('image/png');
+    
+            const byteString = atob(imageData.split(',')[1]);
+            const arrayBuffer = new ArrayBuffer(byteString.length);
+            const uintArray = new Uint8Array(arrayBuffer);
+    
+            for (let i = 0; i < byteString.length; i++) {
+                uintArray[i] = byteString.charCodeAt(i);
+            }
+    
+            const file = new Blob([uintArray], { type: 'image/png' });
+    
+            // Usar FormData para enviar el archivo
+            const formData = new FormData();
+            formData.append("file", file, "photo.png");
+    
+            const url = BASE_URL + "Evidence/upload";
+    
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    try {
+                        const res = JSON.parse(response);
+                        if (res == "si") {
+                            btnLimpiarFiltro();
+                            btnLimpiarTitulo();
+                            loadRecentFiles();
+                            notyf.success("Foto guardada con éxito.");
+                        } else {
+                            notyf.error("Error al guardar la foto.");
+                        }
+                    } catch (e) {
+                        console.error("Respuesta no es JSON: " + response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud: " + status + " - " + error);
+                }
+            });
+    
+            resetCamera();
+        });
+    
+        function resetCamera() {
             canvas.style.display = 'none';
+            context.clearRect(0, 0, canvas.width, canvas.height);
             videoElement.style.display = 'block';
             takePhoto.style.display = 'block';
             acciones_foto.style.display = 'none';
-        }, 500);
-    });
-
-    const savePhotoButton = document.getElementById('savePhoto');
-
-    savePhotoButton.addEventListener('click', () => {
-        $("#modalFoto").modal("hide");
-
-        const imageData = canvas.toDataURL('image/png');
-
-        const byteString = atob(imageData.split(',')[1]);
-        const arrayBuffer = new ArrayBuffer(byteString.length);
-        const uintArray = new Uint8Array(arrayBuffer);
-
-        for (let i = 0; i < byteString.length; i++) {
-            uintArray[i] = byteString.charCodeAt(i);
-        }
-
-        const file = new Blob([uintArray], { type: 'image/png' });
-
-        // Usar FormData para enviar el archivo
-        const formData = new FormData();
-        formData.append("file", file, "photo.png");
-
-        const url = BASE_URL + "Evidence/upload";
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                try {
-                    const res = JSON.parse(response);
-                    if (res == "si") {
-                        btnLimpiarFiltro();
-                        btnLimpiarTitulo();
-                        loadRecentFiles();
-                        notyf.success("Foto guardada con éxito.");
-                    } else {
-                        notyf.error("Error al guardar la foto.");
-                    }
-                } catch (e) {
-                    console.error("Respuesta no es JSON: " + response);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud: " + status + " - " + error);
-            }
-        });
-
-        resetCamera();
-    });
-
-    function resetCamera() {
-        canvas.style.display = 'none';
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        videoElement.style.display = 'block';
-        takePhoto.style.display = 'block';
-        acciones_foto.style.display = 'none';
-    }
+        } */
 }
 
 function loadCards(data) {
@@ -443,7 +447,7 @@ function loadCards(data) {
             });
         }
 
-    }, 300);
+    }, 400);
 }
 
 function generarZip(data) {
@@ -456,7 +460,7 @@ function generarZip(data) {
         // console.log(data);
         Swal.fire({
             title: `¿Estás seguro de querer descargar ${cantidadArchivos} archivo(s)?`,
-            text: "Se descargara un archivo .zip",
+            text: "Se descargara un archivo .zip, la descarga puede ser tartada",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -696,10 +700,10 @@ function busquedaFiltroEmpleado(idEmpleado) {
                     let filtrosAplicadosTexto = "";
                     data.filtros_aplicados.forEach((filtro, index) => {
 
-                        filtrosAplicadosTexto += `<span>${filtro}</span>`;
+                        filtrosAplicadosTexto += `<span>${filtro.desde}</span><span>${filtro.hasta}</span>`;
 
                         if (index < data.filtros_aplicados.length - 1) {
-                            filtrosAplicadosTexto += " ";
+                            filtrosAplicadosTexto += " | ";
                         }
                     });
 
@@ -709,12 +713,10 @@ function busquedaFiltroEmpleado(idEmpleado) {
                 }
                 else {
                     notyf.error('No se encontraron resultados para los filtros aplicados.');
-                    /*  subtituloDiv.text("Se muestran: Ultimos archivos subidos"); */
-                    /*  filtrosParrafo.html(""); */
-
-                    loadRecentFilesEmpleado(idEmpleado);
+                    const emptyData = [];
+                    loadCards(emptyData);
                     btnLimpiarFiltroEmpleado();
-                    btnLimpiarTituloEmpleado();
+                    btnLimpiarTituloSinArchivosEmpleado();
                 }
             } catch (e) {
                 console.error("Respuesta no válida:", response);
@@ -768,19 +770,19 @@ function busquedaPorFiltro(e) {
                         subtituloDiv.html(`Se muestran: <span id="cantidad-archivos">${data.total_archivos}</span> archivo(s) - Filtros aplicados:`);
 
                         let filtrosAplicadosTexto = "";
-                        data.filtros_aplicados.forEach((archivos, index) => {
-                            if (archivos.includes("Sucursal:")) {
+                        data.filtros_aplicados.forEach((filtro, index) => {
+                            if (filtro.desde && filtro.hasta) {
+                                filtrosAplicadosTexto += `<span>${filtro.desde}</span><span>${filtro.hasta}</span>`;
+                            } else if (filtro.includes("Sucursal:")) {
                                 const nombreSucursal = data.archivos[0].nombre_sucursal;
                                 filtrosAplicadosTexto += `<span>${nombreSucursal}</span>`;
-                            } else if (archivos.includes("Empleado:")) {
+                            } else if (filtro.includes("Empleado:")) {
                                 const nombreEmpleado = data.archivos[0].nombre_completo;
                                 filtrosAplicadosTexto += `<span>${nombreEmpleado}</span>`;
-                            } else {
-                                filtrosAplicadosTexto += `<span>${archivos}</span>`;
                             }
 
                             if (index < data.filtros_aplicados.length - 1) {
-                                filtrosAplicadosTexto += " ";
+                                filtrosAplicadosTexto += " | ";
                             }
                         });
                         loadCards(data.archivos);
@@ -796,12 +798,16 @@ function busquedaPorFiltro(e) {
                     /*  subtituloDiv.html('Se muestran: <span id="cantidad-archivos">0</span> archivo(s)');
                      filtrosParrafo.html(""); */
                     if (idRol === 1) {
-                        loadRecentFiles();
+                        /* loadRecentFiles(); */
+                        const emptyData = [];
+                        loadCards(emptyData);
                     } else if (idRol === 2) {
-                        loadRecentFilesEmpleado(idEmpleado);
+                        /*   loadRecentFilesEmpleado(idEmpleado); */
+                        const emptyData = [];
+                        loadCards(emptyData);
                     }
                     btnLimpiarFiltro();
-                    btnLimpiarTitulo();
+                    btnLimpiarTituloSinArchivos();
                 }
             } catch (e) {
                 console.error("Respuesta no válida:", response);
@@ -877,10 +883,34 @@ function btnDetallesArchivo(id) {
                             <path fill-rule="evenodd" d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z"/>
                             <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z"/>
                         </svg>
-                        Descargar archivo
                     `;
 
                     detailsContainer.appendChild(downloadButton);
+
+                    const fechaSubida = new Date(data.fecha_subida);
+                    const fechaActual = new Date();
+                    const diferenciaDias = (fechaActual - fechaSubida) / (1000 * 3600 * 24);
+                    console.log(diferenciaDias);
+                    const deleteButton = document.createElement('a');
+
+                    deleteButton.classList.add('button-add');
+
+                    deleteButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                        </svg>
+                    `;
+
+                    if (diferenciaDias > 2) {
+                        deleteButton.style.pointerEvents = 'none';
+                        deleteButton.style.opacity = '0.5'; 
+                    } else {
+                        deleteButton.addEventListener('click', function () {
+                            eliminarElemento(id, data.ruta);
+                        });
+                    }
+
+                    detailsContainer.appendChild(deleteButton);
 
                     // Si el archivo es PDF, agregar un botón para abrirlo en una nueva pestaña
                     if (data.tipo_archivo === 'application/pdf') {
@@ -892,7 +922,6 @@ function btnDetallesArchivo(id) {
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filetype-pdf" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM1.6 11.85H0v3.999h.791v-1.342h.803q.43 0 .732-.173.305-.175.463-.474a1.4 1.4 0 0 0 .161-.677q0-.375-.158-.677a1.2 1.2 0 0 0-.46-.477q-.3-.18-.732-.179m.545 1.333a.8.8 0 0 1-.085.38.57.57 0 0 1-.238.241.8.8 0 0 1-.375.082H.788V12.48h.66q.327 0 .512.181.185.183.185.522m1.217-1.333v3.999h1.46q.602 0 .998-.237a1.45 1.45 0 0 0 .595-.689q.196-.45.196-1.084 0-.63-.196-1.075a1.43 1.43 0 0 0-.589-.68q-.396-.234-1.005-.234zm.791.645h.563q.371 0 .609.152a.9.9 0 0 1 .354.454q.118.302.118.753a2.3 2.3 0 0 1-.068.592 1.1 1.1 0 0 1-.196.422.8.8 0 0 1-.334.252 1.3 1.3 0 0 1-.483.082h-.563zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638z"/>
                             </svg>
-                            Ver PDF
                         `;
 
                         detailsContainer.appendChild(openPdfButton);
@@ -965,3 +994,60 @@ function btnLimpiarTituloEmpleado() {
     subtituloDiv.html(`Se muestran: <span id="cantidad-archivos"></span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>`);
     filtrosParrafo.html("");
 };
+
+function btnLimpiarTituloSinArchivos() {
+    const filtrosParrafo = $("#filtros-aplicados");
+    const subtituloDiv = $("#filtro-subtitulo");
+
+    subtituloDiv.html(`Se muestran: <span id="cantidad-archivos">0</span> archivo(s)`);
+    filtrosParrafo.html("");
+};
+
+function btnLimpiarTituloSinArchivosEmpleado() {
+    const filtrosParrafo = $("#filtros-aplicados");
+    const subtituloDiv = $("#filtro-subtitulo");
+
+    subtituloDiv.html(`Se muestran: <span id="cantidad-archivos">0</span> archivo(s) - Subido(s) por: <span id="empleado-archivos"></span>`);
+    filtrosParrafo.html("");
+
+    const empleadoElement = document.getElementById('empleado-archivos');
+    empleadoElement.textContent = nombreCompletoUsuario;
+};
+
+function eliminarElemento(id, ruta) {
+    Swal.fire({
+        title: "¿Estas seguro de querer eliminar este archivo?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const url = BASE_URL + "Evidence/eliminar/" + id + "?ruta=" + encodeURIComponent(ruta);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    if (response === "ok") {
+                        notyf.success('Archivo eliminado con éxito');
+                        if (idRol === 1) {
+                            loadRecentFiles();
+                        } else if (idRol === 2) {
+                            loadRecentFilesEmpleado(idEmpleado);
+                        }
+                        cerrarModalDetalles();
+                    } else {
+                        notyf.error('Error al mover el archivo');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud: " + status + " - " + xhr.responseText + " - " + error);
+                }
+            });
+        }
+    });
+}

@@ -1,0 +1,171 @@
+/* TABLA */
+.table__body {
+    margin-top: 15px;
+    width: 100%;
+    height: 90%;
+    flex-grow: 1;
+    background-color: var(--body-color);
+    display: flex;
+    flex-direction: column;
+    padding-right: 2.4rem;
+    overflow: hidden; /* Mantiene la tabla fija */
+}
+
+.cuerpo {
+    margin-left: 1.3rem;
+    width: 100%;
+    height: 95%;
+    border-radius: .4rem;
+    overflow: auto;
+    overflow: overlay;
+    border-bottom: 2.8px solid var(--first-color);
+}
+
+.tabla-vacia {
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+}
+
+table {
+    height: auto;
+    width: 100%;
+    color: var(--text-color);
+    border-spacing: 0;
+}
+
+table, th, td {
+    border-collapse: collapse;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--first-color);
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
+    z-index: 2;
+}
+
+tbody tr {
+    display: table-row;
+}
+
+tbody td {
+    vertical-align: middle;
+}
+
+.paginacion {
+    margin-left: 1.3rem;
+    flex-grow: 1;
+}
+
+.cuerpo::-webkit-scrollbar {
+    width: 0.2rem;
+    height: 0.2rem;
+}
+
+.cuerpo::-webkit-scrollbar-thumb {
+    border-radius: .5rem;
+    background-color: #0004;
+    visibility: hidden;
+}
+
+.cuerpo:hover::-webkit-scrollbar-thumb {
+    visibility: visible;
+}
+
+/* Estado de usuario */
+.estado-usuario {
+    font-size: .9rem;
+    max-width: 70px;
+    width: 70px;
+    display: inline-block;
+    padding: 1px 3px;
+    border-radius: .2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.estado-activo {
+    background-color: hsl(142, 60%, 58%);
+    color: white;
+}
+
+.estado-inactivo {
+    background-color: hsl(0, 64%, 58%);
+    color: white;
+}
+
+.estado-admin {
+    background-color: var(--first-color);
+    color: white;
+}
+
+/* BUTTON */
+.acciones {
+    display: flex;
+    width: 70px;
+    background-color: transparent;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    z-index: 1;
+}
+
+.texto-emergente:hover .svgIcon-spin {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.texto-emergente {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 33px;
+    height: 33px;
+    padding: 0;
+    border: 0px solid transparent;
+    border-radius: .4rem;
+}
+
+.btn-editar {
+    background-color: rgb(210, 180, 30);
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+.btn-editar:hover {
+    background-color: rgb(180, 150, 20);
+}
+
+.btn-deshabilitar {
+    background-color: var(--rojo-boton);
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+.btn-deshabilitar:hover {
+    background-color: var(--rojo-hover);
+}
+
+.btn-habilitar {
+    background-color: var(--verde-boton);
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+.btn-habilitar:hover {
+    background-color: var(--verde-hover);
+}

@@ -44,7 +44,7 @@ class Evidence extends Controller
 
         // Paso 1: Subir el archivo al servidor
 
-        $destino = 'assets/archivos';
+        $destino = 'assets/archivos/archivos_subidos';
 
         // Crear carpeta raíz si no existe
         if (!file_exists($destino)) {
@@ -378,4 +378,55 @@ class Evidence extends Controller
             exit;
         }
     } */
+
+    public function eliminar(int $id)
+    {
+        $ruta = $_GET['ruta'];
+        $id_usuario = $_SESSION['id_usuario'];
+        $id_sucursal = $_SESSION['id_sucursal'];
+
+        $carpetaEliminados = 'assets/archivos/archivos_eliminados';
+
+        if (!file_exists($carpetaEliminados)) {
+            mkdir($carpetaEliminados, 0777, true);
+        }
+
+        $carpetaOriginal = 'assets/' . $ruta;
+
+        $carpetaDestino = $carpetaEliminados . '/' . $id_sucursal . '/' . $id_usuario . '/' . date("Ymd");
+
+        if (!file_exists($carpetaDestino)) {
+            mkdir($carpetaDestino, 0777, true);
+        }
+
+        if (file_exists($carpetaOriginal)) {
+            $nuevoNombre = $carpetaDestino . '/' . basename($carpetaOriginal);
+            $originalName = basename($carpetaOriginal);
+            $counter = 1;
+
+            // Verificar si el archivo ya existe en la carpeta de destino
+            while (file_exists($nuevoNombre)) {
+                // Crear un nuevo nombre con un número incremental
+                $nuevoNombre = $carpetaDestino . '/' . pathinfo($originalName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
+                $counter++;
+            }
+
+            // Mover el archivo a la carpeta de eliminados con el nuevo nombre
+            rename($carpetaOriginal, $nuevoNombre);
+
+            // Llamada al modelo para eliminar la referencia del archivo en la base de datos
+            $data['eliminar'] = $this->model->eliminarArchivo(0, $id);
+            if ($data['eliminar'] == 1) {
+                $msg = "ok";
+            } else {
+                $msg = "Error al eliminar archivo";
+            }
+            echo json_encode($msg, JSON_UNESCAPED_UNICODE);
+            die();
+        } else {
+            $msg = "error";
+            echo json_encode($msg, JSON_UNESCAPED_UNICODE);
+        }
+        die();
+    }
 }
