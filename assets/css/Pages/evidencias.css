@@ -8,7 +8,7 @@
   display: block;
   --height-of-loader: 2px;
   height: var(--height-of-loader);
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   position: relative;
 }
 
@@ -249,8 +249,6 @@
   overflow: overlay;
   padding-top: 1.5%;
   flex-grow: 1;
-
-  border: 1px solid red;
   /* Agregar sombra sutil para hacer el borde más notorio */
   /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.39); */
 }
@@ -336,10 +334,9 @@
   letter-spacing: 0.5px;
 }
 
-/* FILTROS DE BUSQUEDA */
 .filtros {
   display: grid;
-  grid-template-columns: 0.8fr 1fr 160px 160px 125px;
+  grid-template-columns: 1fr 1fr 150px 150px 125px;
   column-gap: 15px;
   padding-left: 1.5rem;
   padding-right: 1.3rem;
@@ -353,8 +350,7 @@
 }
 
 .titulo-filtro {
-  grid-column: 1 / -1;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: bold;
   text-align: left;
   color: #333;
@@ -628,6 +624,53 @@ input[type="datetime-local"]:focus {
   }
 }
 
+/* BTN FILTRO PARA CELULARES*/
+.btn-toggle-filters {
+  display: none;
+}
+
+.titulo-btn-filtro {
+  display: flex;
+  align-items: column;
+  margin-left: 1.5rem;
+}
+
+/* FILTROS DE BUSQUEDA */
+@media (max-width: 500px) {
+  .filtros {
+    display: none;
+    transition: display 0.5s ease;
+  }
+
+  .filtros.show-filters {
+    display: block;
+  }
+
+  .btn-toggle-filters {
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    height: 25px;
+    width: 25px;
+    padding-top: 2px;
+    margin-left: 0.3rem;
+  }
+
+  .btn-toggle-filters svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  .btn-toggle-filters {
+    display: block;
+  }
+
+  .btn-toggle-filters:hover {
+    background-color: rgba(173, 167, 167, 0.582);
+  }
+}
+
 /* IMAGEN MODAL - MODAL DETALLES */
 .previewContainer {
   width: 100%;
@@ -696,16 +739,32 @@ input[type="datetime-local"]:focus {
   overflow: hidden;
 }
 
+.delete {
+  background-color: var(--rojo-boton);
+}
+
+.delete:hover {
+  background-color: var(--rojo-hover);
+}
+
+.download {
+  background-color: var(--verde-boton);
+}
+
+.download:hover {
+  background-color: var(--verde-hover);
+}
+
+@media (max-width: 500px) {
+  .pdf {
+    display: none;
+  }
+}
+
 @media (max-width: 999px) {
   .modal-body-details {
     display: flex;
     flex-direction: column;
-    align-items: center;
-  }
-
-  .modal-body {
-    display: flex;
-    justify-content: center;
     align-items: center;
   }
 
@@ -724,6 +783,22 @@ input[type="datetime-local"]:focus {
     max-height: 100%;
     overflow: auto;
   }
+}
+
+.descargar-details {
+  display: flex;
+  align-items: row;
+  gap: 10px;
+}
+
+.descargar-details svg {
+  width: 40px;
+  height: 40px;
+}
+
+.descargar-details a {
+  width: 40px;
+  height: 40px;
 }
 
 /* BOTÓN DE CIERRE */
@@ -910,8 +985,4 @@ canvas {
   background-color: var(--verde-hover);
 }
 
-.descargar-details {
-  display: flex;
-  align-items: row;
-  gap: 10px;
-} */
+*/

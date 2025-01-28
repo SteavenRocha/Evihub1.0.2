@@ -54,9 +54,6 @@ include "Views/Modules/sidebar.php";
                 </table>
             </div>
 
-            <div class="paginacion">
-                
-                </div>
         </section>
     </div>
 

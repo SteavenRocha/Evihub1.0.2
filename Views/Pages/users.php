@@ -57,71 +57,9 @@ include "Views/Modules/sidebar.php";
                 </table>
             </div>
 
-            <div class="paginacion">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-right" id="pagination">
-                        
-                    </ul>
-                </nav>
-            </div>
         </section>
 
     </div>
-
-    <script>
-    const rowsPerPage = 5;
-    const rows = document.querySelectorAll("table tbody tr");
-    const pagination = document.querySelector(".pagination");
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
-    let currentPage = 1;
-
-    // Función para mostrar las filas de la página actual
-    function showPage(page) {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-
-        rows.forEach((row, index) => {
-            if (index >= start && index < end) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
-        });
-
-        // Actualizar el estado de los botones de paginación
-        pagination.querySelectorAll(".page-item").forEach((item, index) => {
-            if (index === 0) {
-                item.classList.toggle("disabled", page === 1);
-            } else if (index === pagination.children.length - 1) {
-                item.classList.toggle("disabled", page === totalPages);
-            } else {
-                item.classList.toggle("active", index === page);
-            }
-        });
-    }
-
-    // Mostrar la página inicial
-    showPage(currentPage);
-
-    // Control de botones de paginación
-    pagination.addEventListener("click", (event) => {
-        const target = event.target;
-        if (target.classList.contains("page-link")) {
-            const page = parseInt(target.textContent);
-            if (isNaN(page)) {
-                if (target.textContent === "Anterior" && currentPage > 1) {
-                    currentPage--;
-                } else if (target.textContent === "Siguiente" && currentPage < totalPages) {
-                    currentPage++;
-                }
-            } else {
-                currentPage = page;
-            }
-            showPage(currentPage);
-        }
-    });
-</script>
-
 
     <!-- Modal -->
     <!-- class="modal-dialog modal-dialog-centered" -->

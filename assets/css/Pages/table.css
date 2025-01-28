@@ -14,10 +14,11 @@
 .cuerpo {
     margin-left: 1.3rem;
     width: 100%;
-    height: 95%;
+    height: 98%;
     border-radius: .4rem;
-    overflow: auto;
-    overflow: overlay;
+    overflow: hidden;
+   /*  overflow: auto; */
+    overflow: scroll;
     border-bottom: 2.8px solid var(--first-color);
 }
 
@@ -36,6 +37,7 @@ table {
 
 table, th, td {
     border-collapse: collapse;
+    white-space: nowrap;
     padding: 0.5rem;
     text-align: left;
 }
@@ -58,9 +60,8 @@ tbody td {
     vertical-align: middle;
 }
 
-.paginacion {
-    margin-left: 1.3rem;
-    flex-grow: 1;
+tbody tr:hover {
+    color: var(--first-color);
 }
 
 .cuerpo::-webkit-scrollbar {

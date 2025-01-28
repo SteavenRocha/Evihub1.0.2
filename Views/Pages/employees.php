@@ -58,10 +58,6 @@ include "Views/Modules/sidebar.php";
                     </tbody>
                 </table>
             </div>
-
-            <div class="paginacion">
-                
-                </div>
         </section>
     </div>
 
