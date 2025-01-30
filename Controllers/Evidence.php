@@ -39,69 +39,42 @@ class Evidence extends Controller
         $name = $archivo['name'];
         $tipo = $archivo['type'];
         $size = $archivo['size'];
+
         $id_usuario = $_SESSION['id_usuario'];
+        $nombre_completo = $_SESSION['nombre_completo'];
+
         $id_sucursal = $_SESSION['id_sucursal'];
+        $nombre_sucursal = $_SESSION['nombre_sucursal'];
 
-        // Paso 1: Subir el archivo al servidor
+        $mesActual = date("m-Y");
+        $diaDelMes = date("d-m");
 
-        $destino = 'assets/archivos/archivos_subidos';
+        $destino = 'assets/archivos/archivos_subidos/' . $mesActual . '/' . $nombre_sucursal . '/' . $nombre_completo . '/' . $diaDelMes;
 
-        // Crear carpeta raíz si no existe
         if (!file_exists($destino)) {
             mkdir($destino, 0777, true);
         }
 
-        // Crear carpeta específica de la sucursal
-        $carpetaSucursal = $destino . '/' . $id_sucursal;
-        if (!file_exists($carpetaSucursal)) {
-            mkdir($carpetaSucursal, 0777, true);
-        }
-
-        // Crear carpeta específica del usuario dentro de la sucursal
-        $carpetaUsuario = $carpetaSucursal . '/' . $id_usuario;
-        if (!file_exists($carpetaUsuario)) {
-            mkdir($carpetaUsuario, 0777, true);
-        }
-
-        // Crear carpeta específica de la fecha dentro del usuario
-        $fecha = date("Ymd");
-        $carpetaFecha = $carpetaUsuario . '/' . $fecha;
-        if (!file_exists($carpetaFecha)) {
-            mkdir($carpetaFecha, 0777, true);
-        }
-
-        // Verificar si el archivo ya existe en la carpeta de destino
-        $filePath = $carpetaFecha . '/' . $name;
+        $filePath = $destino . '/' . $name;
         $originalName = $name;
         $counter = 1;
 
-        // Si el archivo ya existe, agregar un sufijo incremental al nombre
         while (file_exists($filePath)) {
             $name = pathinfo($originalName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
-            $filePath = $carpetaFecha . '/' . $name;
+            $filePath = $destino . '/' . $name;
             $counter++;
         }
 
-        // Mover el archivo a la carpeta con el nuevo nombre
         if (move_uploaded_file($tmp, $filePath)) {
-            // Paso 2: Registrar la ruta en la base de datos
-
-            // Ruta del archivo relativa para la base de datos
             $filePathRelative = str_replace('assets/', '', $filePath);
 
-            // Llamada al modelo para guardar la información en la base de datos
             $data = $this->model->uploadFile($id_usuario, $id_sucursal, $name, $tipo, $size, $filePathRelative);
 
-            if ($data == "ok") {
-                $msg = "si"; // Éxito en la subida y registro
-            } else {
-                $msg = "error"; // Error al guardar la información en la base de datos
-            }
+            $msg = ($data == "ok") ? "si" : "error";
         } else {
-            $msg = "error"; // Error al mover el archivo
+            $msg = "error";
         }
 
-        // Enviar la respuesta en formato JSON
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
@@ -214,7 +187,7 @@ class Evidence extends Controller
         die();
     }
 
-    public function zip()
+    /*     public function zip()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Leer datos enviados desde el frontend
@@ -301,9 +274,9 @@ class Evidence extends Controller
             echo "Método no permitido.";
             exit;
         }
-    }
+    } */
 
-    /*  public function zip()
+    public function zip()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Leer datos enviados desde el frontend
@@ -332,7 +305,7 @@ class Evidence extends Controller
             }
 
             // Definir la base de la ruta del sistema
-            $baseFilePath = $_SERVER['DOCUMENT_ROOT'] . '/EviHub1.0.2/assets/';
+            $baseFilePath = $_SERVER['DOCUMENT_ROOT'] . '/Evihub/assets/';
 
             // Agregar los archivos al ZIP, manteniendo la estructura de carpetas
             foreach ($data as $file) {
@@ -377,15 +350,21 @@ class Evidence extends Controller
             echo "Método no permitido.";
             exit;
         }
-    } */
+    }
 
     public function eliminar(int $id)
     {
         $ruta = $_GET['ruta'];
-        $id_usuario = $_SESSION['id_usuario'];
-        $id_sucursal = $_SESSION['id_sucursal'];
+        /*  $id_usuario = $_SESSION['id_usuario']; */
+        $nombre_completo = $_SESSION['nombre_completo'];
 
-        $carpetaEliminados = 'assets/archivos/archivos_eliminados';
+        /* $id_sucursal = $_SESSION['id_sucursal']; */
+        $nombre_sucursal = $_SESSION['nombre_sucursal'];
+
+        $mesActual = date("m-Y");
+        $diaDelMes = date("d-m");
+
+        $carpetaEliminados = 'assets/archivos/archivos_eliminados/' . $mesActual . '/' . $nombre_sucursal . '/' . $nombre_completo . '/' . $diaDelMes;
 
         if (!file_exists($carpetaEliminados)) {
             mkdir($carpetaEliminados, 0777, true);
@@ -393,40 +372,29 @@ class Evidence extends Controller
 
         $carpetaOriginal = 'assets/' . $ruta;
 
-        $carpetaDestino = $carpetaEliminados . '/' . $id_sucursal . '/' . $id_usuario . '/' . date("Ymd");
-
-        if (!file_exists($carpetaDestino)) {
-            mkdir($carpetaDestino, 0777, true);
-        }
-
         if (file_exists($carpetaOriginal)) {
-            $nuevoNombre = $carpetaDestino . '/' . basename($carpetaOriginal);
+            $nuevoNombre = $carpetaEliminados . '/' . basename($carpetaOriginal);
             $originalName = basename($carpetaOriginal);
             $counter = 1;
 
-            // Verificar si el archivo ya existe en la carpeta de destino
             while (file_exists($nuevoNombre)) {
-                // Crear un nuevo nombre con un número incremental
-                $nuevoNombre = $carpetaDestino . '/' . pathinfo($originalName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
+                $nuevoNombre = $carpetaEliminados . '/' . pathinfo($originalName, PATHINFO_FILENAME) . '_' . $counter . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
                 $counter++;
             }
 
-            // Mover el archivo a la carpeta de eliminados con el nuevo nombre
             rename($carpetaOriginal, $nuevoNombre);
 
-            // Llamada al modelo para eliminar la referencia del archivo en la base de datos
             $data['eliminar'] = $this->model->eliminarArchivo(0, $id);
             if ($data['eliminar'] == 1) {
                 $msg = "ok";
             } else {
                 $msg = "Error al eliminar archivo";
             }
-            echo json_encode($msg, JSON_UNESCAPED_UNICODE);
-            die();
         } else {
             $msg = "error";
-            echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         }
+
+        echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
 }
